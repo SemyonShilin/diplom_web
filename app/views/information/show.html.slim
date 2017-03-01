@@ -1,0 +1,6 @@
+.row
+  .col-md-12
+    = @parse_data
+.row
+  .col-md-12
+    = @data.sort_by! { |line| line[0] }
