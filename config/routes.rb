@@ -3,6 +3,11 @@ Rails.application.routes.draw do
 
   get 'static_pages/contact'
 
-  resources :information
+  resources :information do
+    member do
+      post :build
+      get :draw
+    end
+  end
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 end

@@ -1,3 +1,5 @@
+require 'mathn'
+
 module ExcelDataParser
   def self.parse(file)
     workbook = RubyXL::Parser.parse(file.path)
@@ -9,8 +11,15 @@ module ExcelDataParser
       # temp =  row && row.cells
       # temp.map{|cell| cels << cell.value}
     }
-    rows
+    hash = {}
+    hash[:header] = worksheet_header(rows)
+    # hash[:rows] = rows.sort_by! { |line| line[0] }
+    hash[:rows] = average!(rows){ |line| line[0] }
+    hash[:hash] = array_to_hash(hash[:header], hash[:rows])
+    hash
   end
+
+  private
 
   def self.worksheet_header(data)
     head = []
@@ -22,22 +31,19 @@ module ExcelDataParser
     head
   end
 
-  def sort_array!
-    self.sort_by! { |line| line[0] }
-    # array_from_sheet.each{|elem| print "#{elem}\n"}
-  end
+  def self.average!(data, &block)
+    data.sort_by! &block
 
-  def average!
     y = 1
     array_average = []
-    vec = Vector[*self.at(0)]
-    (self.size - 1).times do |index|
-      if self[index][0] == self[index + 1][0]
-        vec += Vector[*self[index + 1]]
+    vec = Vector[*data.at(0)]
+    (data.size - 1).times do |index|
+      if data[index][0] == data[index + 1][0]
+        vec += Vector[*data[index + 1]]
         y += 1
       else
         array_average << vec / y
-        vec = Vector[*self.at(index + 1)]
+        vec = Vector[*data.at(index + 1)]
         y = 1
         next
       end
@@ -46,10 +52,11 @@ module ExcelDataParser
     array_average.map! { |elem| elem.to_a } # .each{|elem| print "#{elem} \n"}
   end
 
-  # def array_to_hash
-  #   0.upto(array_head.last.to_a.size - 1) do |index|
-  #     @hash_from_array[array_head[1][index]] = array_average.transpose[index]
-  #   end
-  #   hash_from_array
-  # end
+  def self.array_to_hash(header, body)
+    hash_from_array = {}
+    0.upto(header.last.to_a.size - 1) do |index|
+      hash_from_array[header[1][index]] = body.transpose[index]
+    end
+    hash_from_array
+  end
 end

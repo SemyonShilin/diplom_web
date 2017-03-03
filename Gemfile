@@ -60,3 +60,5 @@ gem 'devise'
 gem 'rubyXL'
 
 gem 'bootstrap-sass', '~> 3.3.6'
+gem 'gon'
+gem 'react-rails'

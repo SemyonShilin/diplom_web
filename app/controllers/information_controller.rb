@@ -4,7 +4,7 @@ class InformationController < ApplicationController
   def show
     @inf = Information.find(params[:id])
     @data = ExcelDataParser.parse(@inf.excel)
-    @parse_data = ExcelDataParser.worksheet_header(@data)
+    Gon.global.information_show_path = url_for([:build, @inf])
   end
 
   def new
@@ -12,7 +12,7 @@ class InformationController < ApplicationController
   end
 
   def create
-    @information = Information.new(information_params)
+    @information = Information.create(information_params)
 
     respond_with @information, status: :created, location: information_path(@information.id)
   end
