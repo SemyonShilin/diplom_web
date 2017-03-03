@@ -12,7 +12,7 @@ module ExcelDataParser
       # temp.map{|cell| cels << cell.value}
     }
     hash = {}
-    hash[:header] = worksheet_header(rows)
+    hash[:header] = worksheet_header(rows).map{|t| t.map{|e| e.gsub(/ /, '_') }}
     # hash[:rows] = rows.sort_by! { |line| line[0] }
     hash[:rows] = average!(rows){ |line| line[0] }
     hash[:hash] = array_to_hash(hash[:header], hash[:rows])
