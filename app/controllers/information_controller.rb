@@ -27,7 +27,7 @@ class InformationController < ApplicationController
 
     approx_coordinates = Equations::CubicParabola.calculate_approximation_points(@data[:hash][@data[:header].last.first],
                                                                           @coefficients)
-    @coordinates = [coords, approx_coordinates]
+    @coordinates = [{name: 'coords', data: coords}, {name: 'approx coordinates', data: approx_coordinates}]
   end
 
   private
