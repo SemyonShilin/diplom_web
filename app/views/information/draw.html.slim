@@ -1,5 +1,43 @@
-= @coefficients
-hr
-= @coordinates
+/= @coefficients_cub_p
+.row
+  .col-md-12
+    hr
+    h1 cub p
+    = @coordinates_cub_p
 
-= line_chart @coordinates.map {|hash| {name: hash[:name], data: hash[:data]} }
+.row
+  .col-md-12
+    hr
+    h1 hyp
+    = @coordinates_hyp
+
+.row
+  .col-md-12
+    hr
+    h1 cub p with ext
+    = @coordinates_cub_p_e
+
+.row
+  .col-md-12
+    hr
+    h1 mistake
+    = @mist
+
+
+.row
+  .col-md-6
+    = line_chart @coordinates_cub_p.map {|hash| {name: hash[:name], data: hash[:data]} }
+
+  .col-md-6
+    = line_chart @coordinates_hyp.map {|hash| {name: hash[:name], data: hash[:data]} }
+
+.row
+  .col-md-6
+    = line_chart @coordinates_cub_p_e.map { |hash| { name: hash[:name], data: hash[:data] } }
+
+  .col-md-6
+    = line_chart @shared.map { |hash| { name: hash[:name], data: hash[:data] } }
+
+.row
+  .col-md-12
+    = column_chart @mist
