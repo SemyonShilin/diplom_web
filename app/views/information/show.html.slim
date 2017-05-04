@@ -1,20 +1,20 @@
-.row
-  .col-md-12
-    /= @parse_data
-    = @data[:header]
+/.row
+/  .col-md-12
+/    /= @parse_data
+/    = @data[:header]
 
-hr
-.row
-  .col-md-12
-    /= @data.sort_by! { |line| line[0] }
-    = @data[:rows]
+/hr
+/.row
+/  .col-md-12
+/    /= @data.sort_by! { |line| line[0] }
+/    = @data[:rows]
 hr
 .row
   .col-md-12
     /= @data.sort_by! { |line| line[0] }
     = @data[:hash]
-hr
-  = @data[:rows].size
+/hr
+/  = @data[:rows].size
 
 /table.table.table-hover
 /  - @data[:hash].each do |key, value|
@@ -29,7 +29,7 @@ table.table
   thead
     - @data[:header][1].each do |key|
       th value="#{key}"
-        = key == 'Calibration ID' ? key : link_to(key, draw_information_path(@inf, key) )
+        = key == 'Calibration_ID' ? key : link_to(key, draw_information_path(@inf, key) )
   tbody
     - @data[:rows].each_with_index do |val, index|
       tr

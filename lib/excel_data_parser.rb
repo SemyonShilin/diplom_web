@@ -1,4 +1,5 @@
-require 'mathn'
+# require 'mathn'
+require 'nmatrix'
 
 module ExcelDataParser
   def self.parse(file)
@@ -36,20 +37,23 @@ module ExcelDataParser
 
     y = 1
     array_average = []
-    vec = Vector[*data.at(0)]
+    # p vec = Vector[*data.at(0)]
+    vec = NMatrix.new([data.at(0).size, 1], data.at(0), dtype: :float64)
     (data.size - 1).times do |index|
       if data[index][0] == data[index + 1][0]
-        vec += Vector[*data[index + 1]]
+        vec += NMatrix.new([data[index+1].size, 1], data[index+1], dtype: :float64)
+        # vec += Vector[*data[index + 1]]
         y += 1
       else
         array_average << vec / y
-        vec = Vector[*data.at(index + 1)]
+        vec = NMatrix.new([data[index+1].size, 1], data[index+1], dtype: :float64)
+        # vec = Vector[*data.at(index + 1)]
         y = 1
         next
       end
     end
     array_average << vec / y
-    array_average.map! { |elem| elem.to_a } # .each{|elem| print "#{elem} \n"}
+    array_average.map! { |elem| elem.to_a.flatten } # .each{|elem| print "#{elem} \n"}
   end
 
   def self.array_to_hash(header, body)
