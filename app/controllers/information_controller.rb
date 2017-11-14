@@ -24,17 +24,10 @@ class InformationController < ApplicationController
     gene_data = @data[:hash][params[:gene]]
     coords = Equations.calculate_points(name_gene, gene_data)
 
-    @test = MNK::TestPar.testes(name_gene, gene_data).to_a.flatten
-    approx_coordinates_tests = Equations::CubicParabola.calculate_approximation_points(name_gene, @test)
-    @coordinates_tests = [{name: 'cub_p', data: coords}, {name: 'cub_p approx coordinates', data: approx_coordinates_tests}]
-
-    @hyp_test = MNK::TestHyp.testes(name_gene, gene_data).to_a.flatten
-    approx_coordinates_hyp_tests = Equations::Hyperbola.calculate_approximation_points(name_gene, @hyp_test)
-    @coordinates_hyp_tests = [{name: 'hyp', data: coords}, {name: 'hyp approx coordinates', data: approx_coordinates_hyp_tests}]
-
     @coefficients_cub_p = MNK::CubicParabola.calculate_coefficients(name_gene, gene_data)
     approx_coordinates_cub_p = Equations::CubicParabola.calculate_approximation_points(name_gene, @coefficients_cub_p)
-    @coordinates_cub_p = [{name: 'cub_p', data: coords}, {name: 'cub_p approx coordinates', data: approx_coordinates_cub_p}]
+    pp y = MNK::CubicParabola.calculat(@coefficients_cub_p, 34)
+    @coordinates_cub_p = [{name: 'cub_p', data: coords}, {name: 'cub_p approx coordinates', data: approx_coordinates_cub_p}, { name: 'point', data: { y => 34 } }]
 
     @coefficients_hyp = MNK::Hyperbola.calculate_coefficients(name_gene, gene_data)
     approx_coordinates_hyp = Equations::Hyperbola.calculate_approximation_points(name_gene, @coefficients_hyp)
@@ -47,11 +40,8 @@ class InformationController < ApplicationController
     mistake_p_e = Supports::Mistake.sum_approximation(gene_data, approx_coordinates_cub_p_e.values)
     mistake_cub = Supports::Mistake.sum_approximation(gene_data, approx_coordinates_cub_p.values)
     mistake_hyp = Supports::Mistake.sum_approximation(gene_data, approx_coordinates_hyp.values)
-    mistake_test = Supports::Mistake.sum_approximation(gene_data, approx_coordinates_tests.values)
-    mistake_hyp_test = Supports::Mistake.sum_approximation(gene_data, approx_coordinates_hyp_tests.values)
 
-    # 'test' => mistake_test,
-    @mist = {'cub_p' => mistake_cub, 'test' => mistake_test, 'hyp' => mistake_hyp, 'cub_p_e' => mistake_p_e, 'hyp bsearch' =>  mistake_hyp_test}
+    @mist = {'cub_p' => mistake_cub, 'hyp' => mistake_hyp, 'cub_p_e' => mistake_p_e}
   end
 
   private

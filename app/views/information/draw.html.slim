@@ -1,62 +1,35 @@
 /= @coefficients_cub_p
-h1 Коэффициенты
-.row
-  .col-md-3
-    h3 Через nmatrix
-    = @test
-  .col-md-3
-    h3 сам cub p
-    = @coefficients_cub_p
-  .col-md-3
-    h3 sam cub p with e
-    = @coefficients_cub_p_e
-  .col-md-3
-    h3 sam hyp
-    = @coefficients_hyp
-.row
-  .col-md-3
-    h3 bsearch test
-    = @hyp_test
+/h1 Коэффициенты
+/.row
+  /.col-md-3
+  /  h3 Через nmatrix
+  /  = @test
+  /.col-md-3
+  /  h3 сам cub p
+  /  = @coefficients_cub_p
+  /.col-md-3
+  /  h3 sam cub p with e
+  /  = @coefficients_cub_p_e
+  /.col-md-3
+  /  h3 sam hyp
+  /  = @coefficients_hyp
+/.row
+/  .col-md-3
+/    h3 bsearch test
+/    = @hyp_test
 
 hr
-h1 Данные tests
-.row
-  .col-md-6
-    = @coordinates_tests
-  .col-md-6
-    = line_chart @coordinates_tests.map {|hash| {name: hash[:name], data: hash[:data]} }
 
-hr
-h1 Данные cub p
 .row
   .col-md-6
-    = @coordinates_cub_p
-  .col-md-6
+    h1 Данные cub p
     = line_chart @coordinates_cub_p.map {|hash| {name: hash[:name], data: hash[:data]} }
-
-hr
-h1 Data cub p with e
-.row
   .col-md-6
-    = @coordinates_cub_p_e
-  .col-md-6
+    h1 Data cub p with e
     = line_chart @coordinates_cub_p_e.map { |hash| { name: hash[:name], data: hash[:data] } }
-
-hr
-h1 Data hyp
-.row
   .col-md-6
-    = @coordinates_hyp
-  .col-md-6
+    h1 Data hyp
     = line_chart @coordinates_hyp.map { |hash| { name: hash[:name], data: hash[:data] } }
-
-hr
-h1 Data hyp bsearch
-.row
-  .col-md-6
-    = @coordinates_hyp_tests
-  .col-md-6
-    = line_chart @coordinates_hyp_tests.map { |hash| { name: hash[:name], data: hash[:data] } }
 
 hr
 h1 Ошибки
