@@ -20,20 +20,7 @@ module Equations
     def self.calculate_approximation_points(x, coefficients)
       x = x.collect(&:to_f)
       y = x.collect do |v|
-        (coefficients.first*v + coefficients.second) / (v + coefficients.third)
-      end
-
-      union_for_charts(x, y)
-    end
-  end
-
-  module Hyperbola
-    extend Supports::Plotting
-
-    def self.calculate_approximation_points(x, coefficients)
-      x = x.collect(&:to_f)
-      y = x.collect do |v|
-        (coefficients.first*v + coefficients.second) / (v + coefficients.third)
+        (coefficients[0] * v + coefficients[1]) / (v + coefficients[2])
       end
 
       union_for_charts(x, y)
