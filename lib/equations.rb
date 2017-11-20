@@ -14,6 +14,19 @@ module Equations
     end
   end
 
+  module CubicParabolaWithExtremes
+    extend Supports::Plotting
+
+    def self.calculate_approximation_points(x, coefficients)
+      x = x.collect(&:to_f)
+      y = x.collect do |v|
+        coefficients.first * v**3 + coefficients.second * v**2 + coefficients.third * v + coefficients.fourth
+      end
+
+      union_for_charts(x, y)
+    end
+  end
+
   module Hyperbola
     extend Supports::Plotting
 

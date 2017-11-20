@@ -1,10 +1,9 @@
 class InformationController < ApplicationController
   respond_to :html, :js, :json
-  before_action :init_data, only: [:show, :draw]
+  layout false, only: :create
+  before_action :init_data, only: %i[draw all]
 
   def show
-    # @inf = Information.find(params[:id])
-    # @data = ExcelDataParser.parse(@inf.excel)
     Gon.global.information_show_path = url_for([:build, @inf])
   end
 
@@ -13,49 +12,44 @@ class InformationController < ApplicationController
   end
 
   def create
-    @information = Information.create(information_params)
+    @information = Information.new(information_params).create
 
-    respond_with @information, status: :created, location: information_path(@information.id)
+    respond_with @information, status: :created, location: all_information_path(@information.patient)
+  end
+
+  def all
+    @header = @patient.genes.pluck(:name).uniq
+    @data_y = @data_y.values
+    @body = @data_y.unshift(@data_x).uniq.transpose
   end
 
   def draw
-    data_x = @data[:hash][@data[:header].last.first]
-    data_y = @data[:hash][params[:gene]]
-    coords = Equations.calculate_points(data_x, data_y)
+    @data_y = @data_y[params[:gene]]
+    coords = Equations.calculate_points(@data_x, @data_y)
 
-    parabola = MNK::CubicParabola.new(data_x: data_x, data_y: data_y)
-    @coefficients_cub_p = parabola.calculate_coefficients
-    approx_coordinates_cub_p = Equations::CubicParabola.calculate_approximation_points(data_x, @coefficients_cub_p)
-    y = parabola.search_points(@coefficients_cub_p, 34)
-    @coordinates_cub_p = [{name: 'cub_p', data: coords}, {name: 'cub_p approx coordinates', data: approx_coordinates_cub_p}, { name: 'point', data: { y => 34 } }]
+    approx_coordinates_cub_p = MNK::CubicParabola.new(data_x: @data_x, data_y: @data_y).process
+    # y = parabola.search_points(@coefficients_cub_p, 25)
+    @coordinates_cub_p = [{name: 'cub_p', data: coords}, {name: 'cub_p approx coordinates', data: approx_coordinates_cub_p}]#, { name: 'point', data: { y => 25 } }]
 
-    hyperbola = MNK::Hyperbola.new(data_x: data_x, data_y: data_y)
-    @coefficients_hyp = hyperbola.calculate_coefficients
-    approx_coordinates_hyp = Equations::Hyperbola.calculate_approximation_points(data_x, @coefficients_hyp)
-    y = hyperbola.search_points(@coefficients_hyp, 34)
-    @coordinates_hyp = [{name: 'hyp', data: coords}, {name: 'hyp approx coordinates', data: approx_coordinates_hyp}, { name: 'point', data: { y => 34 } }]
+    approx_coordinates_hyp = MNK::Hyperbola.new(data_x: @data_x, data_y: @data_y).process
+    @coordinates_hyp = [{name: 'hyp', data: coords}, {name: 'hyp approx coordinates', data: approx_coordinates_hyp}]
 
-    parabola_with_e = MNK::CubicParabolaWithExtremes.new(data_x: data_x, data_y: data_y)
-    @coefficients_cub_p_e = parabola_with_e.calculate_coefficients
-    approx_coordinates_cub_p_e = Equations::CubicParabola.calculate_approximation_points(data_x, @coefficients_cub_p_e)
-    y = parabola_with_e.search_points(@coefficients_cub_p_e, 34)
-    @coordinates_cub_p_e = [{name: 'cub_p_e', data: coords}, {name: 'cub_p_e approx coordinates', data: approx_coordinates_cub_p_e}, { name: 'point', data: { y => 34 } }]
+    approx_coordinates_cub_p_e = MNK::CubicParabolaWithExtremes.new(data_x: @data_x, data_y: @data_y).process
+    @coordinates_cub_p_e = [{name: 'cub_p_e', data: coords}, {name: 'cub_p_e approx coordinates', data: approx_coordinates_cub_p_e}]
 
-    mistake_p_e = Supports::Mistake.sum_approximation(data_y, approx_coordinates_cub_p_e.values)
-    mistake_cub = Supports::Mistake.sum_approximation(data_y, approx_coordinates_cub_p.values)
-    mistake_hyp = Supports::Mistake.sum_approximation(data_y, approx_coordinates_hyp.values)
-
-    @mist = {'cub_p' => mistake_cub, 'hyp' => mistake_hyp, 'cub_p_e' => mistake_p_e}
+    approx_data_hash = { cub_p: approx_coordinates_cub_p.values, cub_p_e: approx_coordinates_cub_p_e.values, hyp: approx_coordinates_hyp.values }
+    @mist = Supports::Mistake.calculate(@data_y, approx_data_hash)
   end
 
   private
 
   def information_params
-    params.require(:information).permit(:excel, :gene)
+    params.require(:information).permit(:excel, :gene, :patient)
   end
 
   def init_data
-    @inf = Information.find(params[:id])
-    @data = ExcelDataParser.parse(@inf.excel)
+    @patient = Patient.find_by_name(params[:patient])
+    @data_x = @patient.data_xes.pluck(:percent)
+    @data_y = @patient.grouped_by_gene
   end
 end

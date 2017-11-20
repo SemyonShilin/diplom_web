@@ -47,5 +47,13 @@ module Supports
       end
       sum
     end
+
+    def self.calculate(y, **data)
+      temp = {}
+      data.each do |key, value|
+        temp[key] = sum_approximation(y, value)
+      end
+      temp
+    end
   end
 end

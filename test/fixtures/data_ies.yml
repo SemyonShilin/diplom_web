@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  percent: 
+  latitude: 1
+  longitude: 1
+  gene: one
+  data_x: one
+
+two:
+  percent: 
+  latitude: 1
+  longitude: 1
+  gene: two
+  data_x: two

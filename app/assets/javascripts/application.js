@@ -14,6 +14,7 @@
 //= require jquery_ujs
 //= require Chart.bundle
 //= require chartkick
+//= require jquery.remotipart
 //= require react
 //= require react_ujs
 //= require components

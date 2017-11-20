@@ -18,6 +18,12 @@ class MNK::Base
     end.bsearch { |x| x[1] >= y }[0]
   end
 
+  def process
+    coefficients = self.calculate_coefficients
+    "Equations::#{self.class.to_s.demodulize}".safe_constantize
+                                              .calculate_approximation_points(@data_x, coefficients)
+  end
+
   private
 
   def x_steps
