@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171120102541) do
+ActiveRecord::Schema.define(version: 20171121092506) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -53,8 +53,25 @@ ActiveRecord::Schema.define(version: 20171120102541) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "real_data_ies", force: :cascade do |t|
+    t.decimal "percent"
+    t.integer "latitude"
+    t.integer "longitude"
+    t.bigint "gene_id"
+    t.bigint "data_x_id"
+    t.bigint "patient_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["data_x_id"], name: "index_real_data_ies_on_data_x_id"
+    t.index ["gene_id"], name: "index_real_data_ies_on_gene_id"
+    t.index ["patient_id"], name: "index_real_data_ies_on_patient_id"
+  end
+
   add_foreign_key "data_ies", "data_xes"
   add_foreign_key "data_ies", "genes"
   add_foreign_key "data_ies", "patients"
   add_foreign_key "data_xes", "patients"
+  add_foreign_key "real_data_ies", "data_xes"
+  add_foreign_key "real_data_ies", "genes"
+  add_foreign_key "real_data_ies", "patients"
 end

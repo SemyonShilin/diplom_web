@@ -1,0 +1,3 @@
+= simple_form_for @information, method: :post, remote: true, url: [:real_data_y_index, patient: params[:patient], gene: params[:gene], chart: params[:chart]] do |f|
+  = f.input :real_y
+  = f.submit

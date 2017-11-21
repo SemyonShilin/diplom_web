@@ -2,11 +2,12 @@ class Information
   extend CarrierWave::Mount
   include ActiveModel::Model
 
-  attr_accessor :excel, :header, :rows, :hash, :patient
+  attr_accessor :excel, :header, :rows, :hash, :patient, :real_y
 
   def initialize(options = {})
     @excel = options[:excel]
     @patient = options[:patient]
+    @real_y = options[:real_y]
   end
 
   mount_uploader :excel, ExcelUploader

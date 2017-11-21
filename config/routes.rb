@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   get 'static_pages/contact'
 
   resources :information
+  resources :real_data_y, param: 'patient/:gene/:chart'
 
   get 'information/all/(:patient)', to: 'information#all', as: 'all_information'
   get 'information/draw/(:patient)/(:gene)', to: 'information#draw', as: 'draw'
