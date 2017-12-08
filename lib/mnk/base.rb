@@ -11,7 +11,7 @@ class MNK::Base
     @data_x = options[:data_x]
     @data_y = options[:data_y]
     @approx_y = nil
-    @coefficients = self.calculate_coefficients
+    @coefficients = calculate_coefficients
   end
 
   def search_points(coeff, y)
@@ -23,7 +23,7 @@ class MNK::Base
 
   def process
     @approx_y = "Equations::#{self.class.to_s.demodulize}".safe_constantize
-                                              .calculate_approximation_points(@data_x, @coefficients)
+                                                          .calculate_approximation_points(@data_x, @coefficients)
     self
   end
 

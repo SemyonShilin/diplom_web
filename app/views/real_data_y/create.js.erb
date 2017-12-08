@@ -1,1 +1,32 @@
+$('#information_real_y').val('')
 $('#chart').html("<%= j render 'chart' %>")
+var chart = $("#chart-1").highcharts();
+console.log(chart)
+//chart.update({
+//   chart: {
+//     type: 'spline'
+//   },
+//   xAxis: {
+//   },
+//   plotOptions: {
+//     spline: {
+//       marker: {
+//         enabled: true
+//       }
+//     }
+//   }
+//});
+console.log("<%= @coordinates %>")
+chart.update({
+  chart: {
+    type: 'spline'
+  },
+
+  xAxis: {
+  },
+
+  series: {
+    enableMouseTracking: true
+
+  }
+});

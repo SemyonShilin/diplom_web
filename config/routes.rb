@@ -8,5 +8,8 @@ Rails.application.routes.draw do
 
   get 'information/all/(:patient)', to: 'information#all', as: 'all_information'
   get 'information/draw/(:patient)/(:gene)', to: 'information#draw', as: 'draw'
+
+  require 'sidekiq/web'
+  mount Sidekiq::Web => '/sidekiq'
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 end

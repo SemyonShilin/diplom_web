@@ -12,7 +12,7 @@
 //
 //= require jquery
 //= require jquery_ujs
-//= require Chart.bundle
+//= require highcharts
 //= require chartkick
 //= require jquery.remotipart
 //= require react

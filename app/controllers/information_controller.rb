@@ -12,7 +12,7 @@ class InformationController < ApplicationController
   end
 
   def create
-    @information = Information.new(information_params).create
+    @information = ParsingExcelJob.perform_now(Information.new(information_params))
 
     respond_with @information, status: :created, location: all_information_path(@information.patient)
   end

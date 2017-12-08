@@ -66,3 +66,5 @@ gem 'nmatrix'
 # gem 'binary_search_tree'
 gem 'responders'
 gem 'remotipart', '~> 1.2'
+
+gem 'sidekiq'

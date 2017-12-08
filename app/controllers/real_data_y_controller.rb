@@ -14,15 +14,16 @@ class RealDataYController < ApplicationController
   end
 
   def create
+    # @information = ParsingExcelJob.perform_now(Information.new(real_y_params))
     @information = Information.new(real_y_params)
 
     coords = Equations.calculate_points(@data_x, @data_y)
     @mnk = "MNK::#{allowed_chart_params[:chart].camelize}".safe_constantize
     object = @mnk.new(data_x: @data_x, data_y: @data_y)
     approx_coordinates = object.process
-    real_y = object.search_points(object.coefficients, @information.real_y)
+    real_x = object.search_points(object.coefficients, @information.real_y)
     @coordinates = [{ name: @mnk.to_s.demodulize, data: coords }, { name: "#{@mnk.to_s.demodulize} approx coordinates", data: approx_coordinates.approx_y },
-                    { name: 'point', data: { real_y => @information.real_y } }]
+                    { name: 'point', data: { real_x => @information.real_y } }]
 
     render :create, layout: false
   end
@@ -44,6 +45,6 @@ class RealDataYController < ApplicationController
   end
 
   def real_y_params
-    params.require(:information).permit(:real_y)
+    params.require(:information).permit(:real_y, :excel)
   end
 end
