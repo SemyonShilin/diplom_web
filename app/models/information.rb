@@ -2,11 +2,11 @@ class Information
   extend CarrierWave::Mount
   include ActiveModel::Model
 
-  attr_accessor :excel, :header, :rows, :hash, :patient, :real_y
+  attr_accessor :excel, :header, :rows, :hash, :uid, :real_y
 
   def initialize(options = {})
     @excel = options[:excel]
-    @patient = options[:patient]
+    @uid = options[:uid]
     @real_y = options[:real_y]
   end
 
@@ -14,7 +14,8 @@ class Information
 
   def create
     data = ExcelDataParser.parse(self, @excel)
-    pat = Patient.create!(name: @patient)
+    pat = Patient.first_or_create!(uid: @uid)
+    model = @real_y.present? ? RealDataY : DataY
 
     ActiveRecord::Base.transaction do
       data.header.last.each do |gene|
@@ -27,7 +28,7 @@ class Information
         g = Gene.find_by_name(gene)
 
         data.hash[gene].each_with_index do |y, index|
-          record = DataY.new(percent: y)
+          record = model.new(percent: y)
           record.gene = g
           record.data_x = DataX.find_by_percent(data.rows[index][0])
           record.patient = pat

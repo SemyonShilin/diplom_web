@@ -40,6 +40,7 @@ group :development do
   gem 'web-console', '>= 3.3.0'
   gem 'listen', '~> 3.0.5'
   gem 'dotenv-rails', '~> 2.2'
+  gem 'meta_request'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem

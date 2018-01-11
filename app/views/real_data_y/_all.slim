@@ -1,0 +1,12 @@
+= link_to 'Обработать все данные', search_data_path(@patient.uid, params[:gene], params[:chart], all: true), remote: true
+table.table
+  thead
+  - @patient.grouped_by_gene_real_y.keys.delete_if { |k| k == 'Calibration_ID'}.each do |key|
+    th value="#{key}"
+      = key
+  tbody#real_data_y
+    - data = @patient.grouped_by_gene_real_y.values.drop(0).transpose
+    - data.each do |val|
+      tr
+        - val.sort { |a, b| a <=> b }.each do |cell|
+          td value="#{cell[0]}" = link_to cell[1], search_data_path(@patient.uid, params[:gene], params[:chart], real_id: cell[0]), remote: true

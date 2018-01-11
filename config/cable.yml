@@ -1,10 +1,12 @@
-development:
-  adapter: async
-
-test:
-  adapter: async
-
-production:
+default: &default
   adapter: redis
   url: redis://localhost:6379/1
-  channel_prefix: diplom_web_production
+
+production:
+  <<: *default
+
+dev:
+  <<: *default
+
+demo:
+  <<: *default

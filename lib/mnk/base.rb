@@ -5,20 +5,21 @@ require 'nmatrix'
 class MNK::Base
   include Supports::MNK
 
-  attr_accessor :data_x, :data_y, :approx_y, :coefficients
+  attr_accessor :data_x, :data_y, :approx_y, :coefficients, :min_max
 
   def initialize(**options)
     @data_x = options[:data_x]
     @data_y = options[:data_y]
     @approx_y = nil
     @coefficients = calculate_coefficients
+
+    initialize_range
   end
 
   def search_points(coeff, y)
-    y = y.to_f
-    x_steps.map do |x|
-      [x, formule(x, coeff)]
-    end.bsearch { |x| x[1] >= y }[0]
+    initialize_range
+    custom_search(coeff, y.to_f)
+    @middle
   end
 
   def process
@@ -29,9 +30,16 @@ class MNK::Base
 
   private
 
-  def x_steps
-    temp = []
-    0.step(by: 0.001, to: 100) { |elem| temp << elem }
-    temp
+  def custom_search(coeff, y)
+    loop do
+      break if @min_max.size == 1
+      @min_max = y > formule(@middle, coeff) ? set_range(@middle, @min_max[-1]) : set_range(@min_max[0], @middle)
+      @middle = median @min_max
+    end
+  end
+
+  def initialize_range
+    @min_max = (0.0..100.0).step(0.001).to_a
+    @middle = median @min_max
   end
 end

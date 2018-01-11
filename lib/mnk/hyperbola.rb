@@ -1,4 +1,3 @@
-
 class MNK::Hyperbola < MNK::Base
   def calculate_coefficients
     params = %w(a b d)

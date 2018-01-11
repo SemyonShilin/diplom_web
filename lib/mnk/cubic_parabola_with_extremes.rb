@@ -18,10 +18,10 @@ class MNK::CubicParabolaWithExtremes < MNK::Base
   end
 
   def coefficient_c(x, y)
-    (y.last - coefficient_a(x, y) * x.last**3 - coefficient_b(x, y) * x.last**2 - y.first)/x.last
+    (y.last - coefficient_a(x, y) * x.last**3 - coefficient_b(x, y) * x.last**2 - y.first) / x.last
   end
 
-  def coefficient_d(x, y)
+  def coefficient_d(_, y)
     y[0]
   end
 
@@ -52,10 +52,10 @@ class MNK::CubicParabolaWithExtremes < MNK::Base
   end
 
   def formule(x, coeff)
-    a = coeff[0]#2.3055586981154643e-05
-    b = coeff[1]#-0.0007970093314787948
-    c = coeff[2]#0.6278312922935302
-    d = coeff[3]#3.887052187887129
+    a = coeff[0]
+    b = coeff[1]
+    c = coeff[2]
+    d = coeff[3]
     a * x**3 + b * x**2 + c * x + d
   end
 end

@@ -4,10 +4,11 @@ Rails.application.routes.draw do
   get 'static_pages/contact'
 
   resources :information
-  resources :real_data_y, param: 'patient/:gene/:chart'
+  resources :real_data_y, param: 'uid/:gene/:chart'
 
-  get 'information/all/(:patient)', to: 'information#all', as: 'all_information'
-  get 'information/draw/(:patient)/(:gene)', to: 'information#draw', as: 'draw'
+  get 'information/all/(:uid)', to: 'information#all', as: 'all_information'
+  get 'information/draw/(:uid)/(:gene)', to: 'information#draw', as: 'draw'
+  get 'search/(:uid)/(:gene)/:chart', to: 'real_data_y#search', as: 'search_data'
 
   require 'sidekiq/web'
   mount Sidekiq::Web => '/sidekiq'

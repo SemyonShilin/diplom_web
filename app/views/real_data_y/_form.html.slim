@@ -1,3 +1,5 @@
-= simple_form_for @information, method: :post, remote: true, url: [:real_data_y_index, patient: params[:patient], gene: params[:gene], chart: params[:chart]] do |f|
-  = f.input :real_y
+= simple_form_for @information, method: :post, remote: true, url: [:real_data_y_index, uid: session[:uid], gene: params[:gene], chart: params[:chart]] do |f|
+  = f.hidden_field :real_y, value: true
+  = f.input :excel
+  = f.hidden_field :uid, value: session[:uid]
   = f.submit

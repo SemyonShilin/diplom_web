@@ -1,0 +1,27 @@
+$('#chart').html("<%= j render 'chart' %>")
+
+// $('#data').html("<%= j @coordinates.inspect %>")
+
+var chart = $("#chart-1").highcharts();
+alert('222')
+
+chart.update({
+  chart: {
+    type: 'spline'
+  },
+
+  xAxis: {
+  },
+  plotOptions: {
+    series: {
+      compare: 'percent',
+      showInNavigator: true
+    }
+  },
+
+
+  series: {
+    enableMouseTracking: true
+
+  }
+});
