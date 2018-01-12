@@ -1,6 +1,6 @@
 class RealDataYController < ApplicationController
   respond_to :html, :js, :json
-  before_action :init_data, only: %i[show]
+  before_action :init_data, only: %i[show new]
 
   def show
     @information = Information.new({})
@@ -11,13 +11,20 @@ class RealDataYController < ApplicationController
     @coordinates = [{name: @mnk.to_s.demodulize, data: coords}, {name: "#{@mnk.to_s.demodulize} approx coordinates", data: approx_coordinates.approx_y}]#, { name: 'point', data: { y => 25 } }]
   end
 
+  def new
+    @information = Information.new({})
+
+    @patient = Patient.find_by_uid(session[:uid])
+  end
+
   def create
     @information = Information.new(real_y_params)
-    ParsingExcelJob.perform_later(@information.path, session[:uid])
+    ParsingExcelJob.perform_later(@information.path, session[:uid], @information.real_y)
+    sleep 1
 
     @patient = Patient.find_by_uid(session[:uid])
     @data_x = @patient.data_xes.order(:percent).distinct.pluck(:percent)
-    @data_y = @patient.grouped_by_gene_real_y.values
+    @data_y = @patient.grouped_by_gene_real_y
 
     render :create, layout: false
   end

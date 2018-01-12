@@ -7,8 +7,8 @@ class Information
   def initialize(options = {})
     @excel = options[:excel]
     @uid = options[:uid]
-    @real_y = options[:real_y]
-    @path = options[:path] || options[:real_y] || @excel&.path
+    @real_y = serialize_real_y(options[:real_y])
+    @path = options[:path] || @excel&.path
   end
 
   mount_uploader :excel, ExcelUploader
@@ -16,7 +16,7 @@ class Information
   def create
     data = ExcelDataParser.parse(self, @path, @excel)
     pat = Patient.first_or_create!(uid: @uid)
-    model = @real_y.present? ? RealDataY : DataY
+    model = @real_y ? RealDataY : DataY
 
     ActiveRecord::Base.transaction do
       data.header.last.each do |gene|
@@ -38,5 +38,10 @@ class Information
       end
     end
     data
+  end
+
+  def serialize_real_y(real_y)
+    return true if real_y.is_a? TrueClass
+    real_y == 'true' ? true : false
   end
 end
