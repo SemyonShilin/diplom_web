@@ -8,9 +8,10 @@ class InformationController < ApplicationController
   end
 
   def create
-    @information = ParsingExcelJob.new(arguments: :information).perform(Information.new(information_params))
+    @information = Information.new(information_params)
+    ParsingExcelJob.perform_later(@information.path, session[:uid])
 
-    respond_with @information, status: :created, location: all_information_path(@information.uid)
+    redirect_to all_information_path(session[:uid])
   end
 
   def all
@@ -44,8 +45,8 @@ class InformationController < ApplicationController
 
   def init_data
     @patient = Patient.find_by_uid(params[:uid])
-    @data_x = @patient.data_xes.order(:percent).pluck(:percent)
+    @data_x = @patient.data_xes.order(:percent).distinct.pluck(:percent)
     data_y = @patient.grouped_by_gene
-    @data_y = action_name == 'all' ? data_y.values : data_y[params[:gene]]
+    @data_y = action_name == 'all' ? data_y.values.uniq : data_y[params[:gene]].uniq
   end
 end

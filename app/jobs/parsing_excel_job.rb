@@ -1,7 +1,7 @@
 class ParsingExcelJob < ApplicationJob
-  queue_as :parsing
+  queue_as :default
 
-  def perform(params)
-    params.create
+  def perform(path, uid)
+    Information.new(path: path, uid: uid).create
   end
 end

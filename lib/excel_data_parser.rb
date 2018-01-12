@@ -3,8 +3,8 @@ require 'nmatrix'
 
 module ExcelDataParser
   class << self
-    def parse(information, file)
-      workbook = RubyXL::Parser.parse(file.path)
+    def parse(information, path, file = nil)
+      workbook = RubyXL::Parser.parse(path || file&.path)
       worksheet = workbook[0]
       rows = []
       worksheet.each { |row| rows << row.cells.map(&:value) }

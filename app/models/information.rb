@@ -2,18 +2,19 @@ class Information
   extend CarrierWave::Mount
   include ActiveModel::Model
 
-  attr_accessor :excel, :header, :rows, :hash, :uid, :real_y
+  attr_accessor :excel, :header, :rows, :hash, :uid, :real_y, :path
 
   def initialize(options = {})
     @excel = options[:excel]
     @uid = options[:uid]
     @real_y = options[:real_y]
+    @path = options[:path] || options[:real_y] || @excel&.path
   end
 
   mount_uploader :excel, ExcelUploader
 
   def create
-    data = ExcelDataParser.parse(self, @excel)
+    data = ExcelDataParser.parse(self, @path, @excel)
     pat = Patient.first_or_create!(uid: @uid)
     model = @real_y.present? ? RealDataY : DataY
 

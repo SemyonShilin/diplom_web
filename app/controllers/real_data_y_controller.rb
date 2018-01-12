@@ -4,7 +4,7 @@ class RealDataYController < ApplicationController
 
   def show
     @information = Information.new({})
-    pp @data_x
+
     coords = Equations.calculate_points(@data_x, @data_y)
     @mnk = "MNK::#{allowed_chart_params[:chart].camelize}".safe_constantize
     approx_coordinates = @mnk.new(data_x: @data_x, data_y: @data_y).process
@@ -12,7 +12,9 @@ class RealDataYController < ApplicationController
   end
 
   def create
-    @information = ParsingExcelJob.new(arguments: :information).perform(Information.new(real_y_params))
+    @information = Information.new(real_y_params)
+    ParsingExcelJob.perform_later(@information.path, session[:uid])
+
     @patient = Patient.find_by_uid(session[:uid])
     @data_x = @patient.data_xes.order(:percent).distinct.pluck(:percent)
     @data_y = @patient.grouped_by_gene_real_y.values
