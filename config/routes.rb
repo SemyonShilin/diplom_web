@@ -3,12 +3,24 @@ Rails.application.routes.draw do
 
   get 'static_pages/contact'
 
-  resources :information
-  resources :real_data_y, param: 'uid/:gene/:chart'
+  resources :information do
+    collection do
+      get :all
+      get 'draw/:gene', to: 'information#draw'
+    end
 
-  get 'information/all/(:uid)', to: 'information#all', as: 'all_information'
-  get 'information/draw/(:uid)/(:gene)', to: 'information#draw', as: 'draw'
-  get 'search/(:uid)/(:gene)/:chart', to: 'real_data_y#search', as: 'search_data'
+  end
+  resources :real_data_y, param: 'chart/:gene' do #
+    collection do
+      get 'search/:chart/:gene', to: 'real_data_y#search'
+      get 'draw/:gene', to: 'real_data_y#draw', as: :draw
+    end
+  end
+
+  # get 'information/all/(:uid)', to: 'information#all', as: 'all_information'
+  # get 'information/draw/(:uid)/:gene', to: 'information#draw', as: 'draw'
+  # get 'search/(:uid)/(:gene)/:chart', to: 'real_data_y#search', as: 'search_data'
+  # get 'draw/(:uid)/:gene', to: 'real_data_y#draw', as: 'real_draw_y'
 
   require 'sidekiq/web'
   mount Sidekiq::Web => '/sidekiq'

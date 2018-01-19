@@ -1,6 +1,6 @@
-class CreatePatients < ActiveRecord::Migration[5.1]
+class CreateUsers < ActiveRecord::Migration[5.1]
   def change
-    create_table :patients do |t|
+    create_table :users do |t|
       t.string :uid
 
       t.timestamps

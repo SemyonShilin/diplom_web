@@ -14,7 +14,7 @@ table.table
   thead
     - @data_y&.keys&.each do |key|
       th value="#{key}"
-        = key == 'Calibration_ID' ? key : link_to(key, draw_path(@patient.uid, key))
+        = key == 'Calibration_ID' ? key : link_to(key, [:draw_real_data_y_index, gene: key])
   tbody
     - @data_y&.values&.transpose&.each_with_index do |val, index|
       tr

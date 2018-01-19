@@ -15,15 +15,17 @@ class Information
 
   def create
     data = ExcelDataParser.parse(self, @path, @excel)
-    pat = Patient.first_or_create!(uid: @uid)
+    user = User.first_or_create!(uid: @uid)
+    document = user.documents.create!(user: user)
+
     model = @real_y ? RealDataY : DataY
 
     ActiveRecord::Base.transaction do
       data.header.last.each do |gene|
-        Gene.create!(name: gene)
+        Gene.create!(name: gene, document: document)
       end
 
-      DataX.create!(data.hash[data.header.last.first].map { |x| { percent: x, patient: pat } })
+      DataX.create!(data.hash[data.header.last.first].map { |x| { percent: x, user: user, document: document } })
 
       data.header.last.each do |gene|
         g = Gene.find_by_name(gene)
@@ -32,7 +34,8 @@ class Information
           record = model.new(percent: y)
           record.gene = g
           record.data_x = DataX.find_by_percent(data.rows[index][0])
-          record.patient = pat
+          record.user = user
+          record.document = document
           record.save!
         end
       end

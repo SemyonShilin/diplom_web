@@ -29,7 +29,8 @@ table.table
   thead
     - @header.each do |key|
       th value="#{key}"
-        = key == 'Calibration_ID' ? key : link_to(key, draw_path(@patient.uid, key) )
+        = key
+        /== 'Calibration_ID' ? key : link_to(key, draw_path(@user.uid, key) )
   tbody
     - @body.each_with_index do |val, index|
       tr

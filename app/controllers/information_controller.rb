@@ -3,6 +3,14 @@ class InformationController < ApplicationController
   layout false, only: :create
   before_action :init_data, only: %i[draw all]
 
+  def index
+    @user = User.find_by_uid(session[:uid])
+    session[:document_id] = @user.documents.last.id
+
+    # @header = @user.genes.where(document_id: session[:document_id]).order(:id).pluck(:name).uniq
+    # @body = @data_y.unshift(@data_x).uniq.transpose
+  end
+
   def new
     @information = Information.new
   end
@@ -10,12 +18,15 @@ class InformationController < ApplicationController
   def create
     @information = Information.new(information_params)
     ParsingExcelJob.perform_later(@information.path, session[:uid])
+    @user = User.find_by_uid(session[:uid])
+    session[:document_id] = @user.documents.last.id
+    sleep 1
 
-    redirect_to all_information_path(session[:uid])
+    redirect_to action: :index
   end
 
   def all
-    @header = @patient.genes.order(:id).pluck(:name).uniq
+    @header = @user.genes.order(:id).pluck(:name).uniq
     @body = @data_y.unshift(@data_x).uniq.transpose
   end
 
@@ -44,9 +55,9 @@ class InformationController < ApplicationController
   end
 
   def init_data
-    @patient = Patient.find_by_uid(params[:uid])
-    @data_x = @patient.data_xes.order(:percent).distinct.pluck(:percent)
-    data_y = @patient.grouped_by_gene
-    @data_y = action_name == 'all' ? data_y.values.uniq : data_y[params[:gene]].uniq
+    @user = User.find_by_uid(session[:uid])
+    @data_x = @user.data_xes.where(document_id: session[:document_id]).order(:percent).distinct.pluck(:percent)
+    data_y = @user.grouped_by_gene(session[:document_id])
+    @data_y = action_name == 'all' ? data_y.values : data_y[params[:gene]]
   end
 end

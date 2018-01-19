@@ -8,7 +8,7 @@ module ExcelDataParser
       worksheet = workbook[0]
       rows = []
       worksheet.each { |row| rows << row.cells.map(&:value) }
-      information.header = worksheet_header(rows).map { |t| t.map { |e| e.gsub(/ /, '_') } }
+      information.header = worksheet_header(rows).map { |t| t.map { |e| e.tr(' ', '_') } }
       information.rows = average!(rows) { |line| line[0] }
       information.hash = array_to_hash(information.header, information.rows)
       information

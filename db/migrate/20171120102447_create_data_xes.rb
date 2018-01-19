@@ -4,7 +4,8 @@ class CreateDataXes < ActiveRecord::Migration[5.1]
       t.decimal :percent
       t.integer :latitude
       t.integer :longitude
-      t.belongs_to :patient, foreign_key: true
+      t.belongs_to :user, foreign_key: true
+      t.belongs_to :document, foreign_key: true
 
       t.timestamps
     end
