@@ -1,4 +1,4 @@
-module Patients::GroupedData
+module Users::GroupedData
   extend ActiveSupport::Concern
 
   included do
