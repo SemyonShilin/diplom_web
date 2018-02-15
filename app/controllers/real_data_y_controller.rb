@@ -13,7 +13,6 @@ class RealDataYController < ApplicationController
     data_y = @user.grouped_by_gene(session[:document_id])[params[:gene]]
     real_data_y = @user.grouped_by_gene_real_y_without_id(session[:real_document_id])[params[:gene]]
 
-
     coords = Equations.calculate_points(data_x, data_y)
     approx_coordinates = @mnk.new(data_x: real_data_x, data_y: real_data_y).process
     @coordinates = [{name: @mnk.to_s.demodulize, data: coords}, {name: "#{@mnk.to_s.demodulize} approx coordinates", data: approx_coordinates.approx_y}]#, { name: 'point', data: { y => 25 } }]
@@ -41,25 +40,39 @@ class RealDataYController < ApplicationController
   def search
     @user = User.find_by_uid(session[:uid])
     @data_x = @user.data_xes.order(:percent).distinct.pluck(:percent)
-    @data_y = @user.grouped_by_gene[params[:gene]]
-
-    coords = Equations.calculate_points(@data_x, @data_y)
+    @data_y = @user.grouped_by_gene(session[:document_id])#[params[:gene]]
     @mnk = "MNK::#{allowed_chart_params[:chart].camelize}".safe_constantize
-    object = @mnk.new(data_x: @data_x, data_y: @data_y)
-    approx_coordinates = object.process
 
-    @coordinates = [{ name: @mnk.to_s.demodulize, data: coords }, { name: "#{@mnk.to_s.demodulize} approx coordinates", data: approx_coordinates.approx_y }]
-    if params[:real_id].present?
-      real_y = RealDataY.find(params[:real_id]).percent
-      d = object.search_points(object.coefficients, real_y)
-      @coordinates.push({ name: d, data: { d => real_y } })
-    elsif params[:all].present?
-      real_x = {}
-      @user.grouped_by_gene_real_y_without_id_long.values.each_with_index do |data, index|
-        # next if index == 0
-        # break if index == 2
-        data.shift
-        real_x[index] = {}
+    if params[:gene]
+      coords = Equations.calculate_points(@data_x, @data_y[params[:gene]])
+      object = @mnk.new(data_x: @data_x, data_y: @data_y[params[:gene]])
+      approx_coordinates = object.process
+      @coordinates = [{ name: @mnk.to_s.demodulize, data: coords }, { name: "#{@mnk.to_s.demodulize} approx coordinates", data: approx_coordinates.approx_y }]
+    else
+      approx_coordinates = {}
+      coords = {}
+      @coordinates = []
+      @data_y.each do |gen, value|
+        coords[gen] = Equations.calculate_points(@data_x, value)
+        object = @mnk.new(data_x: @data_x, data_y: value)
+        approx_coordinates[gen] = object.process
+      end
+    end
+
+    real_x = {}
+    needed_values = params[:gene] ? @user.grouped_by_gene_real_y_without_id_long(session[:real_document_id])[params[:gene]] : @user.grouped_by_gene_real_y_without_id_long(session[:real_document_id]).values
+    gene_v = []
+    needed_values.each_with_index do |data, index|
+      data.shift unless params[:gene]
+      real_x[index] = {}
+      if params[:gene]
+        key = object.search_points(object.coefficients, data) || 0
+        real_x[index][key] ||= []
+        real_x[index][key] << data
+
+        real_x[index].reject! { |k, _| k == 0 }
+        gene_v << temp = real_x[index].transform_values { |v| v&.at(0).to_f }.sort_by { |_, v| v }.to_h
+      else
         data.each do |d|
           key = object.search_points(object.coefficients, d) || 0
           real_x[index][key] ||= []
@@ -70,6 +83,7 @@ class RealDataYController < ApplicationController
         @coordinates.push({ name: (index + 1).to_s, data: temp })
       end
     end
+    @coordinates.push({ name: 1, data: gene_v.map { |h| h.to_a.flatten } }) if params[:gene]
 
     render :search, layout: false
   end

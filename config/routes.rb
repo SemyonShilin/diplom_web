@@ -12,7 +12,7 @@ Rails.application.routes.draw do
   end
   resources :real_data_y, param: 'chart/:gene' do #
     collection do
-      get 'search/:chart/:gene', to: 'real_data_y#search'
+      get 'search/:chart', to: 'real_data_y#search', as: :search
       get 'draw/:gene', to: 'real_data_y#draw', as: :draw
     end
   end

@@ -5,7 +5,7 @@ class InformationController < ApplicationController
 
   def index
     @user = User.find_by_uid(session[:uid])
-    session[:document_id] = @user.documents.last.id
+    session[:document_id] = @user&.documents&.last&.id
 
     # @header = @user.genes.where(document_id: session[:document_id]).order(:id).pluck(:name).uniq
     # @body = @data_y.unshift(@data_x).uniq.transpose
@@ -18,10 +18,10 @@ class InformationController < ApplicationController
   def create
     @information = Information.new(information_params)
     ParsingExcelJob.perform_later(@information.path, session[:uid])
-    @user = User.find_by_uid(session[:uid])
-    session[:document_id] = @user.documents.last.id
-    sleep 1
 
+    sleep 1
+    @user = User.find_by_uid(session[:uid])
+    session[:document_id] = @user&.documents&.last&.id
     redirect_to action: :index
   end
 

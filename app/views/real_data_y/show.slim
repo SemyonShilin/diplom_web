@@ -1,11 +1,14 @@
+h1 Данные
 .row
-  .col-md-6
-    h1 Данные
-    #chart
-      = render 'chart'
+  #chart
+    = render 'chart'
+
 #all
 
 #data
 
 /#form
 /  = render 'form'
+= link_to 'Ген', search_real_data_y_index_path(params[:chart], gene: params[:gene]), remote: true
+br
+= link_to 'Весь файл', search_real_data_y_index_path(params[:chart]), remote: true

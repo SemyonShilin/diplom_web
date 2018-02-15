@@ -1,1 +1,7 @@
-= line_chart @coordinates
+- if @coordinates.size <= 3
+  .col-md-6
+    = line_chart @coordinates
+- else
+  - @coordinates.each do |*data|
+    .col-md-6
+      = line_chart data
