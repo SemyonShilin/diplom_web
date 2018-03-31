@@ -69,3 +69,6 @@ gem 'responders'
 gem 'remotipart', '~> 1.2'
 
 gem 'sidekiq'
+
+gem 'lazy_high_charts'
+

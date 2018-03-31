@@ -3,6 +3,7 @@ class RealDataYController < ApplicationController
 
   # before_action :init_real_data_y, only: %i[new]
   before_action :init_data_y, only: %i[draw]
+  before_action :init_global_option_chart, only: :draw
 
   def show
     @mnk = "MNK::#{allowed_chart_params[:chart].camelize}".safe_constantize
@@ -24,10 +25,10 @@ class RealDataYController < ApplicationController
 
   def create
     @information = Information.new(real_y_params)
-    ParsingExcelJob.perform_later(@information.path, session[:uid], @information.real_y)
+    ParsingExcelJob.perform_now(@information.path, session[:uid], @information.real_y)
     pp session[:uid]
     pp @user = User.find_by_uid(session[:uid])
-    sleep 2
+    # sleep 2
 
     session[:real_document_id] = @user.documents.last.id
 
@@ -104,6 +105,19 @@ class RealDataYController < ApplicationController
     approx_data_hash = { cub_p: approx_coordinates_cub_p.approx_y.values, cub_p_e: approx_coordinates_cub_p_e.approx_y.values, hyp: approx_coordinates_hyp.approx_y.values }
     @mist = Supports::Mistake.calculate(@data_y, approx_data_hash)
     # @meta = MetaModel.new()
+    @chart = LazyHighCharts::HighChart.new('graph') do |f|
+      f.title(text: "Population vs GDP For 5 Big Countries [2009]")
+      # f.xAxis(categories: ["United States", "Japan", "China", "Germany", "France"])
+      f.series(name: @coordinates_cub_p.first[:name], yAxis: 0, data: @coordinates_cub_p.first[:data].to_a, type: 'line')
+      f.series(name: @coordinates_cub_p.second[:name], yAxis: 1, data: @coordinates_cub_p.second[:data].to_a, type: 'spline')
+
+      f.yAxis [
+                {title: {text: "GDP in Billions", margin: 70} },
+                {title: {text: "approx"}, visible: false}
+              ]
+
+      f.legend(align: 'center', verticalAlign: 'bottom', y: 75, x: -50, layout: 'vertical')
+    end
   end
 
   private
@@ -131,5 +145,30 @@ class RealDataYController < ApplicationController
 
   def real_y_params
     params.require(:information).permit(:real_y, :excel, :uid, :remotipart_submitted, :authenticity_token, :'X-Requested-With', :'X-Http-Accept')
+  end
+
+  def init_global_option_chart
+    @chart_globals = LazyHighCharts::HighChartGlobals.new do |f|
+      f.global(useUTC: false)
+      f.chart(
+        plotShadow: true,
+        width: 700
+      )
+      f.lang(
+        loading: 'Загрузка...',
+        months: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
+        weekdays: ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'],
+        shortMonths: ['Янв', 'Фев', 'Март', 'Апр', 'Май', 'Июнь', 'Июль', 'Авг', 'Сент', 'Окт', 'Нояб', 'Дек'],
+        exportButtonTitle: "Экспорт",
+        printButtonTitle: "Печать",
+        rangeSelectorFrom: "С",
+        rangeSelectorTo: "По",
+        rangeSelectorZoom: "Период",
+        downloadPNG: 'Скачать PNG',
+        downloadJPEG: 'Скачать JPEG',
+        downloadPDF: 'Скачать PDF',
+        downloadSVG: 'Скачать SVG',
+        printChart: 'Напечатать график')
+    end
   end
 end

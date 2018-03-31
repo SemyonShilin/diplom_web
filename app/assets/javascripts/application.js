@@ -12,10 +12,13 @@
 //
 //= require jquery
 //= require jquery_ujs
-//= require highcharts
-//= require chartkick
+// require highcharts
+// require chartkick
 //= require jquery.remotipart
-//= require react
-//= require react_ujs
-//= require components
+// require react
+// require react_ujs
+// require components
+//= require highcharts/highcharts
+//= require highcharts/highcharts-more
+//= require highcharts/highstock
 //= require_tree .

@@ -17,12 +17,12 @@ class InformationController < ApplicationController
 
   def create
     @information = Information.new(information_params)
-    ParsingExcelJob.perform_later(@information.path, session[:uid])
+    ParsingExcelJob.perform_now(@information.path, session[:uid])
 
-    sleep 1
+    # sleep 1
     @user = User.find_by_uid(session[:uid])
     session[:document_id] = @user&.documents&.last&.id
-    redirect_to action: :index
+    redirect_to action: :all
   end
 
   def all
