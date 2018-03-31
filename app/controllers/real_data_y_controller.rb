@@ -151,7 +151,6 @@ class RealDataYController < ApplicationController
     @chart_globals = LazyHighCharts::HighChartGlobals.new do |f|
       f.global(useUTC: false)
       f.chart(
-        plotShadow: true,
         width: 700
       )
       f.lang(
