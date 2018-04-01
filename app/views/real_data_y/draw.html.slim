@@ -19,25 +19,24 @@
 /    = @hyp_test
 
 hr
-
+= high_chart_globals(@chart_globals)
 .row
   .col-md-6
     = link_to [:real_data_y, chart: :cubic_parabola, gene: params[:gene]] do
       h1 Данные cub p
-    / = line_chart @coordinates_cub_p.map {|hash| {name: hash[:name], data: hash[:data]} }
-    = high_chart_globals(@chart_globals)
-    = high_chart("some_id", @chart)
-/   .col-md-6
-/     = link_to [:real_data_y, chart: :cubic_parabola_with_extremes, gene: params[:gene]] do
-/       h1 Data cub p with e
-/     = line_chart @coordinates_cub_p_e.map { |hash| { name: hash[:name], data: hash[:data] } }
-/   .col-md-6
-/     = link_to [:real_data_y, chart: :hyperbola, gene: params[:gene]] do
-/       h1 Data hyp
-/     = line_chart @coordinates_hyp.map { |hash| { name: hash[:name], data: hash[:data] } }
-/
-/ hr
-/ h1 Среднеквадратическое отклонение
-/ .row
-/   .col-md-12
-/     = column_chart @mist
+    = high_chart("cubic_parabola", @coordinates_cub_p.chart)
+.row
+  .col-md-6
+    = link_to [:real_data_y, chart: :cubic_parabola_with_extremes, gene: params[:gene]] do
+      h1 Data cub p with e
+    = high_chart("cubic_parabola_with_extremes", @coordinates_cub_p_e.chart)
+.row
+  .col-md-6
+    = link_to [:real_data_y, chart: :hyperbola, gene: params[:gene]] do
+      h1 Data hyp
+    = high_chart("hyperbola", @coordinates_hyp.chart)
+/hr
+/h1 Среднеквадратическое отклонение
+/.row
+/  .col-md-12
+/    = column_chart @mist

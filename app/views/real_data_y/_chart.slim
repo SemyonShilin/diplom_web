@@ -1,7 +1,9 @@
 - if @coordinates.size <= 3
   .col-md-6
-    = line_chart @coordinates
+    /= line_chart @coordinates
+    = high_chart("chart", @coordinates_cub_p.chart)
 - else
   - @coordinates.each do |*data|
     .col-md-6
-      = line_chart data
+      /= line_chart data
+      = high_chart("cubic_parabola", @coordinates_cub_p.chart)

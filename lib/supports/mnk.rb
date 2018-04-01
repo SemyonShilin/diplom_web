@@ -17,7 +17,7 @@ module Supports
     end
 
     def median(array)
-      raise ArgumentError, 'Cannot find the median on an empty array' if array.size == 0
+      raise ArgumentError, 'Cannot find the median on an empty array' if array.size&.zero?
       sorted = array.sort
       midpoint, remainder = sorted.length.divmod(2)
       remainder.zero? ? sorted[midpoint - 1, 2].inject(:+) / 2.0 : sorted[midpoint]

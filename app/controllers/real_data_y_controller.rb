@@ -3,7 +3,7 @@ class RealDataYController < ApplicationController
 
   # before_action :init_real_data_y, only: %i[new]
   before_action :init_data_y, only: %i[draw]
-  before_action :init_global_option_chart, only: :draw
+  before_action :init_global_option_chart, only: %i[draw show]
 
   def show
     @mnk = "MNK::#{allowed_chart_params[:chart].camelize}".safe_constantize
@@ -92,32 +92,15 @@ class RealDataYController < ApplicationController
   def draw
     coords = Equations.calculate_points(@data_x, @data_y)
 
-    approx_coordinates_cub_p = MNK::CubicParabola.new(data_x: @data_x, data_y: @data_y).process
+    # approx_coordinates_cub_p = MNK::CubicParabola.new(data_x: @data_x, data_y: @data_y)#.process
     # y = parabola.search_points(@coefficients_cub_p, 25)
-    @coordinates_cub_p = [{ name: 'cub_p', data: coords }, { name: 'cub_p approx coordinates', data: approx_coordinates_cub_p.approx_y }]#, { name: 'point', data: { y => 25 } }]
 
-    approx_coordinates_hyp = MNK::Hyperbola.new(data_x: @data_x, data_y: @data_y).process
-    @coordinates_hyp = [{name: 'hyp', data: coords}, {name: 'hyp approx coordinates', data: approx_coordinates_hyp.approx_y}]
+    @coordinates_cub_p = MNK::CubicParabola.new(data_x: @data_x, data_y: @data_y)
+    @coordinates_hyp = MNK::Hyperbola.new(data_x: @data_x, data_y: @data_y)
+    @coordinates_cub_p_e = MNK::CubicParabolaWithExtremes.new(data_x: @data_x, data_y: @data_y)
 
-    approx_coordinates_cub_p_e = MNK::CubicParabolaWithExtremes.new(data_x: @data_x, data_y: @data_y).process
-    @coordinates_cub_p_e = [{name: 'cub_p_e', data: coords}, {name: 'cub_p_e approx coordinates', data: approx_coordinates_cub_p_e.approx_y}]
-
-    approx_data_hash = { cub_p: approx_coordinates_cub_p.approx_y.values, cub_p_e: approx_coordinates_cub_p_e.approx_y.values, hyp: approx_coordinates_hyp.approx_y.values }
+    approx_data_hash = { cub_p: @coordinates_cub_p.approx_y.values, cub_p_e: @coordinates_hyp.approx_y.values, hyp: @coordinates_cub_p_e.approx_y.values }
     @mist = Supports::Mistake.calculate(@data_y, approx_data_hash)
-    # @meta = MetaModel.new()
-    @chart = LazyHighCharts::HighChart.new('graph') do |f|
-      f.title(text: "Population vs GDP For 5 Big Countries [2009]")
-      # f.xAxis(categories: ["United States", "Japan", "China", "Germany", "France"])
-      f.series(name: @coordinates_cub_p.first[:name], yAxis: 0, data: @coordinates_cub_p.first[:data].to_a, type: 'line')
-      f.series(name: @coordinates_cub_p.second[:name], yAxis: 1, data: @coordinates_cub_p.second[:data].to_a, type: 'spline')
-
-      f.yAxis [
-                {title: {text: "GDP in Billions", margin: 70} },
-                {title: {text: "approx"}, visible: false}
-              ]
-
-      f.legend(align: 'center', verticalAlign: 'bottom', y: 75, x: -50, layout: 'vertical')
-    end
   end
 
   private

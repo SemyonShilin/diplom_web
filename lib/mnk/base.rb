@@ -4,14 +4,17 @@ require 'nmatrix'
 
 class MNK::Base
   include Supports::MNK
+  include Supports::Chart
 
-  attr_accessor :data_x, :data_y, :approx_y, :coefficients, :min_max
+  attr_accessor :data_x, :data_y, :approx_y, :coefficients, :min_max,
+                :chart
 
-  def initialize(**options)
-    @data_x = options[:data_x]
-    @data_y = options[:data_y]
-    @approx_y = nil
+  def initialize(data_x:, data_y:)
+    @data_x = data_x
+    @data_y = data_y
     @coefficients = calculate_coefficients
+    @approx_y ||= process.approx_y
+    @chart = construct_line_chart
 
     initialize_range
   end
