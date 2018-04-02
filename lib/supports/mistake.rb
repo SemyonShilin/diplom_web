@@ -15,5 +15,15 @@ module Supports
       end
       temp
     end
+
+    def self.chart(y, **data)
+      mistake = calculate(y, data)
+      mistake_new = []
+      mistake.each { |name, m| mistake_new << { name: name, data: m } }
+      Charts::Column.new do |column|
+        column.title_chart = 'Среднеквадратическое отклонение'
+        column.data = mistake_new
+      end
+    end
   end
 end

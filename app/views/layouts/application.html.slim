@@ -11,5 +11,5 @@ html
 
   body
     #gon_variables= Gon::Base.render_data
-
+    = high_chart_globals(@chart_globals)
     = yield

@@ -19,7 +19,6 @@
 /    = @hyp_test
 
 hr
-= high_chart_globals(@chart_globals)
 .row
   .col-md-6
     = link_to [:real_data_y, chart: :cubic_parabola, gene: params[:gene]] do
@@ -35,8 +34,8 @@ hr
     = link_to [:real_data_y, chart: :hyperbola, gene: params[:gene]] do
       h1 Data hyp
     = high_chart("hyperbola", @coordinates_hyp.chart)
-/hr
-/h1 Среднеквадратическое отклонение
-/.row
-/  .col-md-12
-/    = column_chart @mist
+hr
+h1 Среднеквадратическое отклонение
+.row
+  .col-md-12
+    = high_chart 'mistake', @mist

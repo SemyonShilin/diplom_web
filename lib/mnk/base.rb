@@ -7,11 +7,12 @@ class MNK::Base
   include Supports::Chart
 
   attr_accessor :data_x, :data_y, :approx_y, :coefficients, :min_max,
-                :chart
+                :options
 
-  def initialize(data_x:, data_y:)
+  def initialize(data_x:, data_y:, **options)
     @data_x = data_x
     @data_y = data_y
+    @options = options
     @coefficients = calculate_coefficients
     @approx_y ||= process.approx_y
     @chart = construct_line_chart

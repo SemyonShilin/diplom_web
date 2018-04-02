@@ -1,18 +1,14 @@
 module Supports
   module Chart
+    attr_accessor :chart
+
     def construct_line_chart
       Charts::Line.new do |line|
         line.title_chart = "#{self.class}"
-        line.name = "#{self.class}(данные из файла)"
-        line.data = coords
-        line.approximation_name = "#{self.class} approx coordinates"
-        line.approximation_data = process.approx_y
+        line.data = [{ name: "#{self.class} (из файла)", data: @options[:custom_coords] || coords, type: 'line' },
+                     { name: "#{self.class} (approx)", data: process.approx_y, type: 'spline' }]
       end
     end
-
-    # def construct_column_chart
-    #
-    # end
 
     private
 

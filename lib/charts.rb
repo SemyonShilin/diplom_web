@@ -1,6 +1,6 @@
 module Charts
   class Line < LazyHighCharts::HighChart
-    attr_accessor :kind, :title_chart, :name, :data, :approximation_name, :approximation_data
+    attr_accessor :kind, :title_chart, :name, :data
 
     def initialize(**options)
       @@canvas = 'graph'
@@ -9,25 +9,52 @@ module Charts
     end
 
     def build_chart
-      self.tap do |line|
+      tap do |line|
         line.title(text: line.title_chart)
-        # f.xAxis(categories: ["United States", "Japan", "China", "Germany", "France"])
-        line.series(name: line.name,
-                    yAxis: 0,
-                    data: line.data.to_a, type: 'line')
-        line.series(name: line.approximation_name,
-                    yAxis: 1,
-                    data: line.approximation_data.to_a, type: 'spline')
+        line.data.each do |hash|
+          line.series(name: hash[:name],
+                      yAxis: 0,
+                      data: deep_to_f(hash[:data]),
+                      type: hash[:type])
+        end
 
-        line.yAxis [{ max: 100, title: { text: 'Y', margin: 70 } },
-                    { max: 100, title: { text: 'approx' }, visible: false }]
+        line.yAxis [{ max: 100, title: { text: 'Y', margin: 70 }, visible: true }]
 
         line.legend(align: 'center', verticalAlign: 'bottom',
-                    y: 75, x: -50, layout: 'vertical')
+                    layout: 'vertical')
       end
+    end
+
+    private
+
+    def deep_to_f(array)
+      array.to_a.map { |a| a.map(&:to_f) }
     end
   end
 
   class Column < LazyHighCharts::HighChart
+    attr_accessor :kind, :title_chart, :name, :data
+
+    def initialize(**options)
+      @@canvas = 'graph'
+      super
+      build_chart
+    end
+
+    def build_chart
+      tap do |line|
+        line.title(text: line.title_chart)
+        line.data.each do |hash|
+          line.series(name: hash[:name],
+                      yAxis: 0,
+                      data: [hash[:data]],
+                      type: hash[:type] || 'column')
+        end
+        line.yAxis [{ title: { text: 'Y', margin: 70 }, visible: true }]
+
+        line.legend(align: 'center', verticalAlign: 'bottom',
+                    layout: 'vertical')
+      end
+    end
   end
 end
