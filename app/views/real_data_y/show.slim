@@ -11,4 +11,4 @@ h1 Данные
 /  = render 'form'
 = link_to 'Ген', search_real_data_y_index_path(params[:chart], gene: params[:gene]), remote: true
 br
-= link_to 'Весь файл', search_real_data_y_index_path(params[:chart]), remote: true
+= link_to 'Весь файл', search_real_data_y_index_path(params[:chart], current_gene: params[:gene]), remote: true

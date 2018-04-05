@@ -4,7 +4,6 @@ class RealDataYController < ApplicationController
   before_action :init_user
   # before_action :init_real_data_y, only: %i[new]
   before_action :init_data_y, only: %i[draw]
-  before_action :init_global_option_chart, only: %i[draw show]
 
   def show
     @mnk = "MNK::#{allowed_chart_params[:chart].camelize}".safe_constantize
@@ -52,44 +51,37 @@ class RealDataYController < ApplicationController
     @data_x = @user.data_xes.order(:percent).distinct.pluck(:percent)
     @data_y = @user.grouped_by_gene(session[:document_id])#[params[:gene]]
     @mnk = "MNK::#{allowed_chart_params[:chart].camelize}".safe_constantize
-
-    if params[:gene]
-      coords = Equations.calculate_points(@data_x, @data_y[params[:gene]])
-      object = @mnk.new(data_x: @data_x, data_y: @data_y[params[:gene]])
-      approx_coordinates = object.process
-      @coordinates = [{ name: @mnk.to_s.demodulize, data: coords, type: 'line' }, { name: "#{@mnk.to_s.demodulize} approx coordinates", data: approx_coordinates.approx_y, type: 'spline' }]
-    else
-      approx_coordinates = {}
-      coords = {}
-      @coordinates = []
-      @data_y.each do |gen, value|
-        coords[gen] = Equations.calculate_points(@data_x, value)
-        object = @mnk.new(data_x: @data_x, data_y: value)
-        approx_coordinates[gen] = object.process
-      end
-    end
+    @real_data_x = @user.data_xes.where(document_id: session[:real_document_id]).order(:percent).distinct.pluck(:percent)
+    coords = Equations.calculate_points(@data_x, @data_y[params[:gene] || params[:current_gene]])
+    @coordinates = [{ name: @mnk.to_s.demodulize, data: coords, type: 'line' }]
 
     real_x = {}
     needed_values = params[:gene] ? @user.grouped_by_gene_real_y_without_id_long(session[:real_document_id])[params[:gene]] : @user.grouped_by_gene_real_y_without_id_long(session[:real_document_id]).values
     gene_v = []
+
     needed_values.each_with_index do |data, index|
-      data.shift unless params[:gene]
+      data.unshift unless params[:gene]
       real_x[index] = {}
       if params[:gene]
-        key = object.search_points(object.coefficients, data) || 0
-        real_x[index][key] ||= []
-        real_x[index][key] << data
+        object = @mnk.new(data_x: @data_x, data_y: @data_y[params[:gene]])
+        real_x[index][@real_data_x[index]] ||= []
+        real_x[index][@real_data_x[index]] << object.search_points(object.coefficients, data) || 0
 
-        real_x[index].reject! { |k, _| k == 0 }
-        gene_v << real_x[index].transform_values { |v| v&.at(0).to_f }.sort_by { |_, v| v }.to_h
+        real_x[index].reject! { |k, _| k.nil? }
+        gene_v << real_x[index].transform_values { |v| v&.at(0).to_f }.sort_by(&:last)
       else
-        data.each do |d|
-          key = object.search_points(object.coefficients, d) || 0
-          real_x[index][key] ||= []
-          real_x[index][key] << d
+        object = @mnk.new(data_x: @data_x, data_y: data)
+        searched = []
+        data.each_with_index  do |d, i|
+          # real_x ||= []
+          # real_x[index] ||= {}
+          # real_x[index][@real_data_x[i]] = object.search_points(object.coefficients, d) || 0
+          searched << object.search_points(object.coefficients, d) || 0
         end
-        real_x[index].reject! { |k, _| k == 0}
-        temp = real_x[index].transform_values { |v| v&.at(0).to_f }.sort_by { |_, v| v }.to_h
+        temp = Equations.calculate_points(@real_data_x, searched).transform_values(&:to_f).sort_by(&:last)
+        # real_x[index] Equations.calculate_points(@real_data_x[i], object.search_points(object.coefficients, d) || 0)
+        # real_x[index].reject! { |k, _| k.nil?}
+        # temp = real_x[index].transform_values(&:to_f).sort_by(&:last)
         @coordinates.push({ name: (index + 1).to_s, data: temp, type: 'spline' })
       end
     end
@@ -102,7 +94,7 @@ class RealDataYController < ApplicationController
 
   def allowed_chart_params
     allowed_chart = %w(cubic_parabola cubic_parabola_with_extremes hyperbola)
-    params.permit(:uid, :gene, :chart, :real_id, :all)
+    params.permit(:uid, :gene, :chart, :real_id, :all, :current_gene)
     params.delete(:chart) unless params[:chart].in? allowed_chart
     params
   end
@@ -123,33 +115,6 @@ class RealDataYController < ApplicationController
 
   def real_y_params
     params.require(:information).permit(:real_y, :excel, :uid, :remotipart_submitted, :authenticity_token, :'X-Requested-With', :'X-Http-Accept')
-  end
-
-  def init_global_option_chart
-    @chart_globals = LazyHighCharts::HighChartGlobals.new do |f|
-      f.global(useUTC: false)
-      f.chart(
-        width: 700,
-        zoomType: 'xy',
-        marginBottom: '100',
-        height: 500
-      )
-      f.lang(
-        loading: 'Загрузка...',
-        months: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
-        weekdays: ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'],
-        shortMonths: ['Янв', 'Фев', 'Март', 'Апр', 'Май', 'Июнь', 'Июль', 'Авг', 'Сент', 'Окт', 'Нояб', 'Дек'],
-        exportButtonTitle: "Экспорт",
-        printButtonTitle: "Печать",
-        rangeSelectorFrom: "С",
-        rangeSelectorTo: "По",
-        rangeSelectorZoom: "Период",
-        downloadPNG: 'Скачать PNG',
-        downloadJPEG: 'Скачать JPEG',
-        downloadPDF: 'Скачать PDF',
-        downloadSVG: 'Скачать SVG',
-        printChart: 'Напечатать график')
-    end
   end
 
   def init_user
