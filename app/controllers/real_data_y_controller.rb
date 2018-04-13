@@ -78,7 +78,7 @@ class RealDataYController < ApplicationController
           # real_x[index][@real_data_x[i]] = object.search_points(object.coefficients, d) || 0
           searched << object.search_points(object.coefficients, d) || 0
         end
-        temp = Equations.calculate_points(@real_data_x, searched).transform_values(&:to_f).sort_by(&:last)
+        temp = Equations.calculate_points(@real_data_x, searched).sort_by(&:last)
         # real_x[index] Equations.calculate_points(@real_data_x[i], object.search_points(object.coefficients, d) || 0)
         # real_x[index].reject! { |k, _| k.nil?}
         # temp = real_x[index].transform_values(&:to_f).sort_by(&:last)
