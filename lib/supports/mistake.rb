@@ -11,7 +11,7 @@ module Supports
     def self.calculate(y, **data)
       temp = {}
       data.each do |key, value|
-        temp[key] = sum_approximation(y, value)
+        temp[key] = round_if_long_number(sum_approximation(y, value))
       end
       temp
     end
@@ -24,6 +24,10 @@ module Supports
         column.title_chart = 'Среднеквадратическое отклонение'
         column.data = mistake_new
       end
+    end
+
+    def self.round_if_long_number(value)
+      value.to_s.size > 17 ? "#{value}"[0..17].to_f : value
     end
   end
 end
