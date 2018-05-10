@@ -23,7 +23,9 @@ class RealDataYController < ApplicationController
 
   def create
     @information = Information.new(real_y_params)
-    ParsingExcelJob.perform_now(@information.path, session[:uid], @information.real_y)
+    params = { path: @information.path, uid: session[:uid], real_y:  @information.real_y}
+    Information.new(params).create
+    # ParsingExcelJob.perform_now(@information.path, session[:uid], @information.real_y)
     # sleep 2
 
     session[:real_document_id] = @user.documents.last.id
@@ -35,15 +37,11 @@ class RealDataYController < ApplicationController
   end
 
   def draw
-    # approx_coordinates_cub_p = MNK::CubicParabola.new(data_x: @data_x, data_y: @data_y)#.process
-    # y = parabola.search_points(@coefficients_cub_p, 25)
-
     @coordinates_cub_p = MNK::CubicParabola.new(data_x: @data_x, data_y: @data_y)
     @coordinates_hyp = MNK::Hyperbola.new(data_x: @data_x, data_y: @data_y)
     @coordinates_cub_p_e = MNK::CubicParabolaWithExtremes.new(data_x: @data_x, data_y: @data_y)
 
     approx_data_hash = { cub_p: @coordinates_cub_p.approx_y.values, cub_p_e: @coordinates_hyp.approx_y.values, hyp: @coordinates_cub_p_e.approx_y.values }
-    # pp @mist = Supports::Mistake.calculate(@data_y, approx_data_hash)
     @mist = Supports::Mistake.chart(@data_y, approx_data_hash)
   end
 

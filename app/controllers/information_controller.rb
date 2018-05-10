@@ -17,7 +17,9 @@ class InformationController < ApplicationController
 
   def create
     @information = Information.new(information_params)
-    ParsingExcelJob.perform_now(@information.path, session[:uid])
+    params = { path: @information.path, uid: session[:uid] }
+    Information.new(params).create
+    # ParsingExcelJob.perform_now(@information.path, session[:uid])
 
     # sleep 1
     @user = User.find_by_uid(session[:uid])
