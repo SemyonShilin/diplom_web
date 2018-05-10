@@ -12,3 +12,7 @@
     = high_chart('coords', search_chart(@coordinates))
   - else
     = high_chart("approximation", @coordinates.chart)
+
+.col-md-6
+  - if @file
+    = link_to 'Скачать файл с исправленными данными', root_url + @file, target: :_blank

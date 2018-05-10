@@ -58,8 +58,9 @@ class RealDataYController < ApplicationController
     real_x = {}
     needed_values = params[:gene] ? @user.grouped_by_gene_real_y_without_id_long(session[:real_document_id])[params[:gene]] : @user.grouped_by_gene_real_y_without_id_long(session[:real_document_id]).values
     gene_v = []
+    gene_name = @data_y.keys
 
-    needed_values.each_with_index do |data, index|
+    needed_values[1..-1].each_with_index do |data, index|
       data.unshift unless params[:gene]
       real_x[index] = {}
       if params[:gene]
@@ -72,20 +73,15 @@ class RealDataYController < ApplicationController
       else
         object = @mnk.new(data_x: @data_x, data_y: data)
         searched = []
-        data.each_with_index  do |d, i|
-          # real_x ||= []
-          # real_x[index] ||= {}
-          # real_x[index][@real_data_x[i]] = object.search_points(object.coefficients, d) || 0
+        data.each_with_index  do |d, _|
           searched << object.search_points(object.coefficients, d) || 0
         end
         temp = Equations.calculate_points(@real_data_x, searched).sort_by(&:last)
-        # real_x[index] Equations.calculate_points(@real_data_x[i], object.search_points(object.coefficients, d) || 0)
-        # real_x[index].reject! { |k, _| k.nil?}
-        # temp = real_x[index].transform_values(&:to_f).sort_by(&:last)
-        @coordinates.push({ name: (index + 1).to_s, data: temp, type: 'spline' })
+        @coordinates.push({ name: gene_name[index + 1].to_s, data: temp, type: 'spline' })
       end
     end
     @coordinates.push({ name: 1, data: gene_v.map { |h| h.to_a.flatten }, type: 'spline'}) if params[:gene]
+    @file = ExcelTemplateBuilder.build(@coordinates)
 
     render :search, layout: false
   end
