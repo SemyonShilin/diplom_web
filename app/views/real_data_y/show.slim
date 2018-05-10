@@ -1,4 +1,4 @@
-h1 Данные
+h1 Экспериментальные данные
 .row
   #chart
     = render 'chart'
@@ -9,6 +9,8 @@ h1 Данные
 
 /#form
 /  = render 'form'
-= link_to 'Ген', search_real_data_y_index_path(params[:chart], gene: params[:gene]), remote: true
-br
-= link_to 'Весь файл', search_real_data_y_index_path(params[:chart], current_gene: params[:gene]), remote: true
+.row
+  .col-md-1
+    = link_to 'Ген', search_real_data_y_index_path(params[:chart], gene: params[:gene]), class: 'btn btn-primary', remote: true
+  .col-md-1
+    = link_to 'Весь файл', search_real_data_y_index_path(params[:chart], current_gene: params[:gene]), class: 'btn btn-primary', remote: true

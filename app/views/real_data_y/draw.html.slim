@@ -1,42 +1,35 @@
-/= @coefficients_cub_p
-/h1 Коэффициенты
-/.row
-  /.col-md-3
-  /  h3 Через nmatrix
-  /  = @test
-  /.col-md-3
-  /  h3 сам cub p
-  /  = @coefficients_cub_p
-  /.col-md-3
-  /  h3 sam cub p with e
-  /  = @coefficients_cub_p_e
-  /.col-md-3
-  /  h3 sam hyp
-  /  = @coefficients_hyp
-/.row
-/  .col-md-3
-/    h3 bsearch test
-/    = @hyp_test
+h3.my-4 = "Примеры аппроксимации данных гена #{params[:gene]}"
 
-hr
 = high_chart_globals(@chart_globals)
 .row
-  .col-md-6
-    = link_to [:real_data_y, chart: :cubic_parabola, gene: params[:gene]] do
-      h1 Данные cub p
+  .col-md-8
     = high_chart("cubic_parabola", @coordinates_cub_p.chart)
-.row
-  .col-md-6
-    = link_to [:real_data_y, chart: :cubic_parabola_with_extremes, gene: params[:gene]] do
-      h1 Data cub p with e
-    = high_chart("cubic_parabola_with_extremes", @coordinates_cub_p_e.chart)
-.row
-  .col-md-6
-    = link_to [:real_data_y, chart: :hyperbola, gene: params[:gene]] do
-      h1 Data hyp
-    = high_chart("hyperbola", @coordinates_hyp.chart)
+  .col-md-4
+    p Этот график показывает аппрокисимацию кубической параболой
+    = link_to [:real_data_y, chart: :cubic_parabola, gene: params[:gene]], class: 'btn btn-primary' do
+      h5 Просмотреть
 hr
-h1 Среднеквадратическое отклонение
 .row
-  .col-md-12
+  .col-md-8
+    = high_chart("cubic_parabola_with_extremes", @coordinates_cub_p_e.chart)
+  .col-md-4
+    p Этот график показывает аппрокисимацию кубической параболой, которая включает конечные точки
+    = link_to [:real_data_y, chart: :cubic_parabola_with_extremes, gene: params[:gene]], class: 'btn btn-primary'  do
+      h5 Просмотреть
+hr
+.row
+  .col-md-8
+    = high_chart("hyperbola", @coordinates_hyp.chart)
+  .col-md-4
+    p Этот график показывает аппрокисимацию гиперболой
+    = link_to [:real_data_y, chart: :hyperbola, gene: params[:gene]], class: 'btn btn-primary'  do
+      h5 Просмотреть
+    = link_to [:real_data_y, chart: :hyperbola, gene: params[:gene]] do
+      h5 Просмотреть
+
+hr
+.row
+  .col-md-8
     = high_chart 'mistake', @mist
+  .col-md-4
+    p Этот график показывает среднеквадратическое отклонение

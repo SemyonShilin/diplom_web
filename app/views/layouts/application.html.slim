@@ -9,7 +9,10 @@ html
     = stylesheet_link_tag    'application', media: 'all'
     = javascript_include_tag 'application'
 
-  body
+  body#page-top
     #gon_variables= Gon::Base.render_data
     = high_chart_globals(@chart_globals)
-    = yield
+    = render 'layouts/header'
+    .container.margin-bottom-100
+      = yield
+    = render 'layouts/footer'

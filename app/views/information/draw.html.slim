@@ -1,25 +1,3 @@
-/= @coefficients_cub_p
-/h1 Коэффициенты
-/.row
-  /.col-md-3
-  /  h3 Через nmatrix
-  /  = @test
-  /.col-md-3
-  /  h3 сам cub p
-  /  = @coefficients_cub_p
-  /.col-md-3
-  /  h3 sam cub p with e
-  /  = @coefficients_cub_p_e
-  /.col-md-3
-  /  h3 sam hyp
-  /  = @coefficients_hyp
-/.row
-/  .col-md-3
-/    h3 bsearch test
-/    = @hyp_test
-
-hr
-
 .row
   .col-md-6
     = link_to [:real_data_y, uid: params[:uid], gene: params[:gene], chart: :cubic_parabola] do

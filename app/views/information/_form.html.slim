@@ -1,4 +1,7 @@
-= simple_form_for @information, method: :post do |f|
-  = f.file_field :excel
-  = f.hidden_field :uid, value: session[:uid]
-  = f.submit
+.row
+  = simple_form_for @information, method: :post do |f|
+    .col-md-12.margin-bottom-10
+      = f.file_field :excel
+      = f.hidden_field :uid, value: session[:uid]
+    .col-md-12
+      = f.button :submit, 'Создать', class: 'btn btn-primary'

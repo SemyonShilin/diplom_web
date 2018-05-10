@@ -80,7 +80,7 @@ class RealDataYController < ApplicationController
         @coordinates.push({ name: gene_name[index + 1].to_s, data: temp, type: 'spline' })
       end
     end
-    @coordinates.push({ name: 1, data: gene_v.map { |h| h.to_a.flatten }, type: 'spline'}) if params[:gene]
+    @coordinates.push({ name: params[:gene], data: gene_v.map { |h| h.to_a.flatten }, type: 'spline'}) if params[:gene]
     @file = ExcelTemplateBuilder.build(@coordinates)
 
     render :search, layout: false

@@ -1,18 +1,10 @@
-/- if @coordinates.size <= 3
-/  .col-md-6
-/    /= line_chart @coordinates
-/    = high_chart("chart", @coordinates_cub_p.chart)
-/- else
-/  - @coordinates.each do |*data|
-/    .col-md-6
-/      /= line_chart data
-/      = high_chart("cubic_parabola", @coordinates_cub_p.chart)
-.col-md-6
-  - if @coordinates.is_a? Array
-    = high_chart('coords', search_chart(@coordinates))
-  - else
-    = high_chart("approximation", @coordinates.chart)
-
-.col-md-6
-  - if @file
-    = link_to 'Скачать файл с исправленными данными', root_url + @file, target: :_blank
+.row
+  .col-md-8
+    - if @coordinates.is_a? Array
+      = high_chart('coords', search_chart(@coordinates))
+    - else
+      = high_chart("approximation", @coordinates.chart)
+  .col-md-4
+    /p Этот график показывает аппрокисимацию гиперболой
+    - if @file
+      = link_to 'Скачать файл с исправленными данными', root_url + @file, class: 'btn btn-primary',target: :_blank

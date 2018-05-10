@@ -1,5 +1,8 @@
-= simple_form_for @information, method: :post, remote: true, url: [:real_data_y_index, uid: session[:uid], gene: params[:gene], chart: params[:chart]] do |f|
-  = f.hidden_field :real_y, value: true
-  = f.input :excel
-  = f.hidden_field :uid, value: session[:uid]
-  = f.submit
+.row
+  = simple_form_for @information, method: :post, remote: true, url: [:real_data_y_index, uid: session[:uid], gene: params[:gene], chart: params[:chart]] do |f|
+    .col-md-12.margin-bottom-10
+      = f.hidden_field :real_y, value: true
+      = f.input :excel
+      = f.hidden_field :uid, value: session[:uid]
+    .col-md-12
+      = f.button :submit, 'Создать', class: 'btn btn-primary'

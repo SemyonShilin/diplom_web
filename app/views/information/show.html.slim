@@ -1,29 +1,9 @@
-/.row
-/  .col-md-12
-/    /= @parse_data
-/    = @data[:header]
 
-/hr
-/.row
-/  .col-md-12
-/    /= @data.sort_by! { |line| line[0] }
-/    = @data[:rows]
 hr
 .row
   .col-md-12
     /= @data.sort_by! { |line| line[0] }
     = @data[:hash]
-/hr
-/  = @data[:rows].size
-
-/table.table.table-hover
-/  - @data[:hash].each do |key, value|
-/    thead
-/      th = key
-/    tbody
-/      tr
-/        - value.each do |cell|
-/          td= cell
 
 table.table
   thead

@@ -1,5 +1,5 @@
-@import "bootstrap-sprockets";
 @import "bootstrap";
+@import "1-col-portfolio";
 
 table {
   overflow: hidden;
@@ -24,10 +24,10 @@ thead th:not(:empty):hover::after,
 td:focus::after,
 thead th:not(:empty):focus::after {
   content: '';
-  height: 10000px;
+  height: 1000px;
   left: 0;
   position: absolute;
-  top: -5000px;
+  top: -500px;
   width: 100%;
   z-index: -1;
 }
@@ -42,15 +42,28 @@ th:focus::after {
   background-color: lightblue;
 }
 
-///* Focus stuff for mobile */
-//td:focus::before,
-//tbody th:focus::before {
-//  background-color: lightblue;
-//  content: '';
-//  height: 100%;
-//  top: 0;
-//  left: -5000px;
-//  position: absolute;
-//  width: 10000px;
-//  z-index: -1;
-//}
+footer {
+  position: fixed;
+  right: 0!important;
+  bottom: 0!important;
+  left: 0!important;
+}
+.py-5 {
+  padding: 10px!important;
+}
+
+.margin-bottom-10 {
+  margin-bottom: 10px;
+}
+
+.margin-bottom-100 {
+  margin-bottom: 100px;
+}
+
+table {
+  display: block;
+  overflow: auto;
+  max-width: 100%;
+}
+
+
