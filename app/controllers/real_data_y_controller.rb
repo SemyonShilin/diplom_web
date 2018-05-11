@@ -5,6 +5,13 @@ class RealDataYController < ApplicationController
   # before_action :init_real_data_y, only: %i[new]
   before_action :init_data_y, only: %i[draw]
 
+  def index
+    @data_x = @user.data_xes.order(:percent).distinct.pluck(:percent)
+    pp @data_y = @user.grouped_by_gene_real_y(session[:real_document_id])
+    pp session[:real_document_id]
+    render
+  end
+
   def show
     @mnk = "MNK::#{allowed_chart_params[:chart].camelize}".safe_constantize
 

@@ -1,0 +1,14 @@
+.row
+  .col-md-6
+    | Точные данные
+  .col-md-6
+    | Экспериментальные данные
+.row
+  - @collection.each do |documents|
+
+    .col-md-6
+      = link_to documents[0].to_s, set_document_path(id: documents[0])
+    .col-md-6
+      = link_to documents[1].to_s, set_real_document_path(id: documents[1])
+    hr
+

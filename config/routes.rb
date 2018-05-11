@@ -8,14 +8,18 @@ Rails.application.routes.draw do
       get :all
       get 'draw/:gene', to: 'information#draw'
     end
-
   end
+
   resources :real_data_y, param: 'chart/:gene' do #
     collection do
       get 'search/:chart', to: 'real_data_y#search', as: :search
       get 'draw/:gene', to: 'real_data_y#draw', as: :draw
     end
   end
+
+  resources :documents, only: :index
+  get :set_document, to: 'documents#set_document', as: :set_document
+  get :set_real_document, to: 'documents#set_real_document', as: :set_real_document
 
   # get 'information/all/(:uid)', to: 'information#all', as: 'all_information'
   # get 'information/draw/(:uid)/:gene', to: 'information#draw', as: 'draw'
