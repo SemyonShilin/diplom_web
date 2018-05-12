@@ -19,5 +19,4 @@
 .idea/*
 .env
 public/uploads
-public/excel/*
 coverage
