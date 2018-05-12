@@ -14,6 +14,7 @@ class DocumentsController < ApplicationController
     unless params[:id] == nil
       session[:document_id] = params[:id].to_i
     end
+    flash[:notice] = 'Вы успешно выбрали файл с точными данными'
     redirect_to all_information_index_path
   end
 
@@ -21,6 +22,7 @@ class DocumentsController < ApplicationController
     unless params[:id] == nil
       session[:real_document_id] = params[:id].to_i
     end
+    flash[:notice] = 'Вы успешно выбрали файл с экспериментальными данными'
     redirect_to real_data_y_index_path
   end
 end

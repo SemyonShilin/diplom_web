@@ -14,5 +14,9 @@ html
     = high_chart_globals(@chart_globals)
     = render 'layouts/header'
     .container.margin-bottom-100
+      - unless flash.empty?
+        .row
+          .col-md-12
+            = flash_messages
       = yield
     = render 'layouts/footer'
