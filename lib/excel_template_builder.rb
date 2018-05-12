@@ -12,7 +12,7 @@ module ExcelTemplateBuilder
         end
       end
       name = ('a'..'z').to_a.shuffle[0,8].join
-      workbook.write("public/excel/#{name}.xlsx")
+      workbook.write("#{Rails.root}/public/excel/#{name}.xlsx")
       "/excel/#{name}.xlsx"
     end
   end
