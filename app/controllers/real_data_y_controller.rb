@@ -101,7 +101,7 @@ class RealDataYController < ApplicationController
   end
 
   def init_real_data_y
-    @user = User.find_by_uid(session[:uid])
+    @user = User.all.first
     @data_x = @user.data_xes.where(document_id: session[:real_document_id]).order(:percent).distinct.pluck(:percent)
     data_y = @user.grouped_by_gene_real_y_without_id(session[:real_document_id])
     @data_y = action_name == 'all' ? data_y.values : data_y[params[:gene]]
@@ -119,6 +119,6 @@ class RealDataYController < ApplicationController
   end
 
   def init_user
-    @user = User.includes(:data_xes, :data_ies, :genes).find_by_uid(session[:uid])
+    @user = User.includes(:data_xes, :data_ies, :genes).all.first
   end
 end

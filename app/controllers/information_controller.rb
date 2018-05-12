@@ -4,7 +4,7 @@ class InformationController < ApplicationController
   before_action :init_data, only: %i[draw all]
 
   def index
-    @user = User.find_by_uid(session[:uid])
+    @user = User.all.first
     session[:document_id] = @user&.documents&.last&.id
 
     # @header = @user.genes.where(document_id: session[:document_id]).order(:id).pluck(:name).uniq
@@ -22,7 +22,7 @@ class InformationController < ApplicationController
     # ParsingExcelJob.perform_now(@information.path, session[:uid])
 
     # sleep 1
-    @user = User.find_by_uid(session[:uid])
+    @user = User.all.first
     session[:document_id] = @user&.documents&.last&.id
     redirect_to action: :all
   end
@@ -57,7 +57,7 @@ class InformationController < ApplicationController
   end
 
   def init_data
-    @user = User.find_by_uid(session[:uid])
+    @user = User.all.first
     @data_x = @user.data_xes.where(document_id: session[:document_id]).order(:percent).distinct.pluck(:percent)
     data_y = @user.grouped_by_gene(session[:document_id])
     @data_y = action_name == 'all' ? data_y.values : data_y[params[:gene]]

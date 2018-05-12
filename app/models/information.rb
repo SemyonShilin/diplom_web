@@ -15,7 +15,7 @@ class Information
 
   def create
     data = ExcelDataParser.parse(self, @path, @excel)
-    user = User.first_or_create!(uid: @uid)
+    user = User.all.first
     document = user.documents.create!(user: user)
 
     model = @real_y ? RealDataY : DataY
