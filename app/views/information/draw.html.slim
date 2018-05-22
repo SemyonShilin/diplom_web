@@ -1,15 +1,15 @@
 .row
   .col-md-6
     = link_to [:real_data_y, uid: params[:uid], gene: params[:gene], chart: :cubic_parabola] do
-      h1 Данные cub p
+      h1 Данные кубической параболы
     = line_chart @coordinates_cub_p.map {|hash| {name: hash[:name], data: hash[:data]} }
   .col-md-6
     = link_to [:real_data_y, uid: params[:uid], gene: params[:gene], chart: :cubic_parabola_with_extremes] do
-      h1 Data cub p with e
+      h1 Данные кубической параболы вклячая крайние точки
     = line_chart @coordinates_cub_p_e.map { |hash| { name: hash[:name], data: hash[:data] } }
   .col-md-6
     = link_to [:real_data_y, uid: params[:uid], gene: params[:gene], chart: :hyperbola] do
-      h1 Data hyp
+      h1 Данные гиперболы
     = line_chart @coordinates_hyp.map { |hash| { name: hash[:name], data: hash[:data] } }
 
 hr
