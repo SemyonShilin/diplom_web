@@ -5,10 +5,9 @@
     | Экспериментальные данные
 .row
   - @collection.each do |documents|
-
     .col-md-6
-      = link_to documents[0].to_s, set_document_path(id: documents[0])
+      = link_to documents[0][:name].to_s, set_document_path(id: documents[0][:id])
     .col-md-6
-      = link_to documents[1].to_s, set_real_document_path(id: documents[1])
+      = link_to documents[1][:name].to_s, set_real_document_path(id: documents[1][:id])
     hr
 

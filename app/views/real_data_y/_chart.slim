@@ -3,7 +3,7 @@
     - if @coordinates.is_a? Array
       = high_chart('coords', search_chart(@coordinates))
     - else
-      = high_chart("approximation", @coordinates.chart)
+      = high_chart('approximation', @coordinates.chart)
   .col-md-4
     /p Этот график показывает аппрокисимацию гиперболой
     - if @file

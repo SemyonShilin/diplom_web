@@ -15,7 +15,7 @@ module Users::GroupedData
       grouped = ActiveSupport::HashWithIndifferentAccess.new
                   # .where('created_at > ?', Time.now - 0.1.minute)
       real_data_ies.includes(:gene).where(document_id: document_id).group_by { |y| y.gene.name }.each do |gene, y|
-        grouped[gene] = y.sort_by(&:percent).uniq.pluck(:id, :percent)
+        grouped[gene] = y.uniq.pluck(:id, :percent, :patient_name)
       end
 
       grouped
@@ -25,7 +25,7 @@ module Users::GroupedData
       grouped = ActiveSupport::HashWithIndifferentAccess.new
                   # .where('created_at > ?', Time.now - 0.1.minute)
       real_data_ies.includes(:gene).where(document_id: document_id).group_by { |y| y.gene.name }.each do |gene, y|
-        grouped[gene] = y.sort_by(&:percent).uniq.pluck(:percent)
+        grouped[gene] = y.uniq.pluck(:percent)
       end
 
       grouped
@@ -35,7 +35,7 @@ module Users::GroupedData
       grouped = ActiveSupport::HashWithIndifferentAccess.new
                   # .where('created_at > ?', Time.now - 0.5.minute)
       real_data_ies.includes(:gene).where(document_id: document_id).group_by { |y| y.gene.name }.each do |gene, y|
-        grouped[gene] = y.sort_by(&:percent).uniq.pluck(:percent)
+        grouped[gene] = y.uniq.pluck(:percent, :patient_name)
       end
 
       grouped

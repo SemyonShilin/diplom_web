@@ -6,7 +6,8 @@ class DocumentsController < ApplicationController
     collection_real_data = Document.includes(:real_data_ies).where.not(real_data_ies: { document_id: nil }).order(:id)
     @collection = []
     collection_real_data.map.with_index do |crd, index|
-      @collection << [collection[index]&.id, crd&.id]
+      @collection << [{ name: collection[index]&.name, id: collection[index]&.id },
+                      { name: crd&.name, id: crd&.id }]
     end
   end
 

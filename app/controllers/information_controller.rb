@@ -16,8 +16,8 @@ class InformationController < ApplicationController
   end
 
   def create
-    @information = Information.new(information_params)
-    params = { path: @information.path, uid: session[:uid] }
+    pp @information = Information.new(information_params)
+    pp params = { path: @information.path, uid: session[:uid], name: @information.name }
     Information.new(params).create
     # ParsingExcelJob.perform_now(@information.path, session[:uid])
 

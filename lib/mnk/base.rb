@@ -29,6 +29,7 @@ class MNK::Base
   def process
     @approx_y = "Equations::#{self.class.to_s.demodulize}".safe_constantize
                                                           .calculate_approximation_points(@data_x, @coefficients)
+    @approx_y = @approx_y.each { |_, v| round_if_long_number(v) }
     self
   end
 
@@ -45,5 +46,9 @@ class MNK::Base
   def initialize_range
     @min_max = (0.0..100.0).step(0.001).to_a
     @middle = median @min_max
+  end
+
+  def round_if_long_number(value)
+    value.to_s.size > 17 ? "#{value}"[0..17].to_f : value
   end
 end

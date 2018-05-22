@@ -1,5 +1,5 @@
 module Charts
-  class Line < LazyHighCharts::HighChart
+  class Base < LazyHighCharts::HighChart
     attr_accessor :kind, :title_chart, :name, :data
 
     def initialize(**options)
@@ -7,7 +7,9 @@ module Charts
       super
       build_chart
     end
+  end
 
+  class Line < Base
     def build_chart
       tap do |line|
         line.title(text: line.title_chart)
@@ -32,15 +34,7 @@ module Charts
     end
   end
 
-  class Column < LazyHighCharts::HighChart
-    attr_accessor :kind, :title_chart, :name, :data
-
-    def initialize(**options)
-      @@canvas = 'graph'
-      super
-      build_chart
-    end
-
+  class Column < Base
     def build_chart
       tap do |line|
         line.title(text: line.title_chart)

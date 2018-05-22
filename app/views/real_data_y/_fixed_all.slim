@@ -1,0 +1,12 @@
+- if @file
+  = link_to 'Скачать файл с исправленными данными', root_url + @file, class: 'btn btn-primary',target: :_blank
+
+table.table
+  thead
+    - @fixed&.each do |hash|
+      th = hash[:name]
+  tbody
+    - @fixed[0][:data].size.times do |ii|
+      tr
+        - @fixed.size.times do |i|
+          td = @fixed[i][:data][ii]

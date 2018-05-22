@@ -3,25 +3,18 @@ class RealDataYController < ApplicationController
 
   before_action :init_user
   # before_action :init_real_data_y, only: %i[new]
-  before_action :init_data_y, only: %i[draw]
+  before_action :init_data_y, only: %i[show draw]
 
   def index
     @data_x = @user.data_xes.order(:percent).distinct.pluck(:percent)
-    pp @data_y = @user.grouped_by_gene_real_y(session[:real_document_id])
-    pp session[:real_document_id]
+    @data_y = @user.grouped_by_gene_real_y(session[:real_document_id])
+
     render
   end
 
   def show
     @mnk = "MNK::#{allowed_chart_params[:chart].camelize}".safe_constantize
-
-    data_x = @user.data_xes.where(document_id: session[:document_id]).order(:percent).distinct.pluck(:percent)
-    real_data_x = @user.data_xes.where(document_id: session[:real_document_id]).order(:percent).distinct.pluck(:percent)
-    data_y = @user.grouped_by_gene(session[:document_id])[params[:gene]]
-    real_data_y = @user.grouped_by_gene_real_y_without_id(session[:real_document_id])[params[:gene]]
-
-    @coordinates = @mnk.new(data_x: real_data_x, data_y: real_data_y,
-                            custom_coords: Equations.calculate_points(data_x, data_y))
+    @coordinates = @mnk.new(data_x: @data_x, data_y: @data_y)
   end
 
   def new
@@ -30,15 +23,14 @@ class RealDataYController < ApplicationController
 
   def create
     @information = Information.new(real_y_params)
-    params = { path: @information.path, uid: session[:uid], real_y:  @information.real_y}
+    params = { path: @information.path, uid: session[:uid], real_y:  @information.real_y, name: @information.name}
     Information.new(params).create
     # ParsingExcelJob.perform_now(@information.path, session[:uid], @information.real_y)
-    # sleep 2
 
     session[:real_document_id] = @user.documents.last.id
 
     @data_x = @user.data_xes.order(:percent).distinct.pluck(:percent)
-    @data_y = @user.grouped_by_gene_real_y( session[:real_document_id])
+    @data_y = @user.grouped_by_gene_real_y(session[:real_document_id])
 
     render :create, layout: false
   end
@@ -56,37 +48,39 @@ class RealDataYController < ApplicationController
     @data_x = @user.data_xes.order(:percent).distinct.pluck(:percent)
     @data_y = @user.grouped_by_gene(session[:document_id])#[params[:gene]]
     @mnk = "MNK::#{allowed_chart_params[:chart].camelize}".safe_constantize
-    @real_data_x = @user.data_xes.where(document_id: session[:real_document_id]).order(:percent).distinct.pluck(:percent)
-    coords = Equations.calculate_points(@data_x, @data_y[params[:gene] || params[:current_gene]])
-    @coordinates = [{ name: @mnk.to_s.demodulize, data: coords, type: 'line' }]
+    @real_data_x = @data_x
+    @fixed = []
 
-    real_x = {}
-    needed_values = params[:gene] ? @user.grouped_by_gene_real_y_without_id_long(session[:real_document_id])[params[:gene]] : @user.grouped_by_gene_real_y_without_id_long(session[:real_document_id]).values
+    grouped_values = @user.grouped_by_gene_real_y_without_id_long(session[:real_document_id])
+    needed_values = params[:gene] ? grouped_values[params[:gene]] : grouped_values.values[1..-1]
     gene_v = []
     gene_name = @data_y.keys
 
-    needed_values[1..-1].each_with_index do |data, index|
-      data.unshift unless params[:gene]
-      real_x[index] = {}
-      if params[:gene]
-        object = @mnk.new(data_x: @data_x, data_y: @data_y[params[:gene]])
-        real_x[index][@real_data_x[index]] ||= []
-        real_x[index][@real_data_x[index]] << object.search_points(object.coefficients, data) || 0
+    patients = grouped_values.select { |k, _| k unless k.start_with?('CG') }.transform_values { |v| v.map(&:second) }
+    @fixed.push({ name: patients.keys.first, data: patients.values.first })
 
-        real_x[index].reject! { |k, _| k.nil? }
-        gene_v << real_x[index].transform_values { |v| v&.at(0).to_f }.sort_by(&:last)
+    needed_values.each_with_index do |data, index|
+      data.unshift unless params[:gene]
+      if params[:gene]
+        next if data[0] == nil
+
+        object = @mnk.new(data_x: @data_x, data_y: @data_y[params[:gene]])
+        gene_v[index] = (object.search_points(object.coefficients, data[0]) || 0)&.to_f
       else
-        object = @mnk.new(data_x: @data_x, data_y: data)
+        object = @mnk.new(data_x: @data_x, data_y: @data_y[gene_name[index + 1]])
         searched = []
-        data.each_with_index  do |d, _|
-          searched << object.search_points(object.coefficients, d) || 0
+
+        data.each_with_index  do |d, i|
+          next if d[0] == nil
+          searched[i] = (object.search_points(object.coefficients, d[0]) || 0)&.to_f
         end
-        temp = Equations.calculate_points(@real_data_x, searched).sort_by(&:last)
-        @coordinates.push({ name: gene_name[index + 1].to_s, data: temp, type: 'spline' })
+        @fixed.push({ name: gene_name[index + 1].to_s, data: searched })
       end
+
     end
-    @coordinates.push({ name: params[:gene], data: gene_v.map { |h| h.to_a.flatten }, type: 'spline'}) if params[:gene]
-    @file = ExcelTemplateBuilder.build(@coordinates)
+
+    @fixed.push({ name: params[:gene], data: gene_v})if params[:gene]
+    @file = ExcelTemplateBuilder.build(@fixed)
 
     render :search, layout: false
   end

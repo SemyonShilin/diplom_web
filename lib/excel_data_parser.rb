@@ -8,9 +8,10 @@ module ExcelDataParser
       worksheet = workbook[0]
       rows = []
       worksheet.each { |row| rows << row.cells.map(&:value) }
+      rows.map(&:compact!)
       information.tap do |inf|
         inf.header = worksheet_header(rows).map { |t| t.map { |e| e.tr(' ', '_') } }
-        inf.rows = average!(rows) { |line| line[0] }
+        inf.rows = inf.real_y ? rows : average!(rows) { |line| line[0] }
         inf.hash = array_to_hash(inf.header, inf.rows)
       end
     end
@@ -19,7 +20,7 @@ module ExcelDataParser
 
     def worksheet_header(data)
       head = []
-      data.each { |elem| elem[0].class == String ? head << elem : break }
+      data.each { |elem| elem[-1].class == String ? head << elem : break }
       head.size.times { data.shift }
       head
     end

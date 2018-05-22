@@ -2,10 +2,9 @@ table.table
   thead
     - @data_y&.keys&.each do |key|
       th value="#{key}"
-        = key == 'Calibration_ID' ? key : link_to(key, [:draw_real_data_y_index, gene: key])
+        = key.start_with?('CG_')? link_to(key, [:draw_real_data_y_index, gene: key]) : key
   tbody
     - @data_y&.values&.transpose&.each_with_index do |val, index|
       tr
         - val.each do |cell|
-          td = cell[1]
-          /link_to cell[1], search_data_path(@patient.uid, params[:gene], params[:chart], real_id: cell[0]), remote: true
+          td = cell[1] || cell[2]
