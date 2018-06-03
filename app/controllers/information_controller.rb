@@ -6,9 +6,6 @@ class InformationController < ApplicationController
   def index
     @user = User.all.first
     session[:document_id] = @user&.documents&.last&.id
-
-    # @header = @user.genes.where(document_id: session[:document_id]).order(:id).pluck(:name).uniq
-    # @body = @data_y.unshift(@data_x).uniq.transpose
   end
 
   def new
@@ -21,7 +18,6 @@ class InformationController < ApplicationController
     Information.new(params).create
     # ParsingExcelJob.perform_now(@information.path, session[:uid])
 
-    # sleep 1
     @user = User.all.first
     session[:document_id] = @user&.documents&.last&.id
     redirect_to action: :all
@@ -36,7 +32,6 @@ class InformationController < ApplicationController
     coords = Equations.calculate_points(@data_x, @data_y)
 
     approx_coordinates_cub_p = MNK::CubicParabola.new(data_x: @data_x, data_y: @data_y).process
-    # y = parabola.search_points(@coefficients_cub_p, 25)
     @coordinates_cub_p = [{ name: 'cub_p', data: coords }, { name: 'cub_p approx coordinates', data: approx_coordinates_cub_p.approx_y }]#, { name: 'point', data: { y => 25 } }]
 
     approx_coordinates_hyp = MNK::Hyperbola.new(data_x: @data_x, data_y: @data_y).process
@@ -47,7 +42,6 @@ class InformationController < ApplicationController
 
     approx_data_hash = { cub_p: approx_coordinates_cub_p.approx_y.values, cub_p_e: approx_coordinates_cub_p_e.approx_y.values, hyp: approx_coordinates_hyp.approx_y.values }
     @mist = Supports::Mistake.calculate(@data_y, approx_data_hash)
-    # @meta = MetaModel.new()
   end
 
   private
